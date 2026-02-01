@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora de Grasa Corporal (Navy)</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        .resultado { margin-top: 20px; padding: 10px; background: #ffffff; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<h1>Método Navy</h1>
+
+<form method="POST">
+    <label>Sexo:</label>
+    <select name="sexo" required>
+        <option value="M">Hombre</option>
+        <option value="F">Mujer</option>
+    </select><br><br>
+
+    <label>Altura (cm):</label>
+    <input type="number" name="altura" required><br><br>
+
+    <label>Cuello (cm):</label>
+    <input type="number" name="cuello" required><br><br>
+
+    <label>Abdomen (cm) — solo hombres:</label>
+    <input type="number" name="abdomen"><br><br>
+
+    <label>Cintura (cm) — solo mujeres:</label>
+    <input type="number" name="cintura"><br><br>
+
+    <label>Cadera (cm) — solo mujeres:</label>
+    <input type="number" name="cadera"><br><br>
+
+    <button type="submit">Calcular</button>
+</form>
+
+{% if resultado %}
+<div class="resultado">
+    <h3>Porcentaje de grasa corporal:</h3>
+    <p><strong>{{ resultado }}%</strong></p>
+</div>
+{% endif %}
+
+</body>
+</html>
