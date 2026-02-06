@@ -6,6 +6,10 @@
         body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
         h1 { text-align: center; }
         .resultado { margin-top: 20px; padding: 10px; background: #ffffff; border-radius: 5px; }
+        /* COLORES */
+        .verde { color: #0a8a0a; font-weight: bold; }
+        .amarillo { color: #c7a600; font-weight: bold; }
+        .rojo { color: #c40000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -56,28 +60,92 @@
 
 {% if resultado %}
 <div class="resultado">
+
+    <!-- GRASA CORPORAL -->
     <p><strong>Grasa corporal:</strong> {{ resultado.grasa }}%
-    <br><small>Porcentaje de tu peso total que corresponde a grasa. Es una medida clave de composición corporal.</small></p>
+    <br><small>Porcentaje de tu peso total que corresponde a grasa. Es una medida clave de composición corporal.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if sexo == "M" %}
+            {% if resultado.grasa < 14 %}
+            <span class="amarillo">14% – 24% (bajo)</span>
+        {% elif resultado.grasa <= 24 %}
+            <span class="verde">14% – 24% (saludable)</span>
+        {% else %}
+            <span class="rojo">14% – 24% (alto)</span>
+        {% endif %}
+    {% else %}
+        {% if resultado.grasa < 21 %}
+            <span class="amarillo">21% – 31% (bajo)</span>
+        {% elif resultado.grasa <= 31 %}
+            <span class="verde">21% – 31% (saludable)</span>
+        {% else %}
+            <span class="rojo">21% – 31% (alto)</span>
+        {% endif %}
+     {% endif %}
+    </small></p>
 
+     <!-- MASA GRASA -->
     <p><strong>Masa grasa:</strong> {{ resultado.masa_grasa }} kg
-    <br><small>Cantidad de grasa en tu cuerpo expresada en kilos. Ayuda a ver cambios reales más allá del peso.</small></p>
+    <br><small>Cantidad de grasa en tu cuerpo expresada en kilos. Ayuda a ver cambios reales más allá del peso.</small>
 
+    <!-- FFM -->
     <p><strong>Masa libre de grasa (FFM):</strong> {{ resultado.ffm }} kg
-    <br><small>Todo lo que no es grasa: músculo, hueso, órganos y agua. Es la base para estimar masa muscular.</small></p>
+    <br><small>Todo lo que no es grasa: músculo, hueso, órganos y agua. Es la base para estimar masa muscular.</small>
 
+    <!-- MASA MUSCULAR -->
     <p><strong>Masa muscular:</strong> {{ resultado.masa_muscular }} kg
-    <br><small>Estimación de la cantidad de músculo en tu cuerpo. Útil para evaluar progreso en fuerza y estética.</small></p>
+    <br><small>Estimación de la cantidad de músculo en tu cuerpo. Útil para evaluar progreso en fuerza y estética.</small>
 
+    <!-- PORCENTAJE MUSCULAR -->
     <p><strong>Porcentaje muscular:</strong> {{ resultado.porcentaje_muscular }}%
-    <br><small>Proporción de tu peso total que corresponde a músculo. Complementa al porcentaje de grasa.</small></p>
+    <br><small>Proporción de tu peso total que corresponde a músculo. Complementa al porcentaje de grasa.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if sexo == "M" %}
+            {% if resultado.porcentaje_muscular < 40 %}
+                <span class="rojo">40% – 50% (bajo)</span>
+            {% elif resultado.porcentaje_muscular <= 50 %}
+                <span class="verde">40% – 50% (saludable)</span>
+            {% else %}
+                <span class="amarillo">40% – 50% (muy alto)</span>
+            {% endif %}
+        {% else %}
+            {% if resultado.porcentaje_muscular < 35 %}
+                <span class="rojo">35% – 45% (bajo)</span>
+            {% elif resultado.porcentaje_muscular <= 45 %}
+                <span class="verde">35% – 45% (saludable)</span>
+            {% else %}
+                <span class="amarillo">35% – 45% (muy alto)</span>
+            {% endif %}
+        {% endif %}
+        </small></p>
 
+    <!-- IMC -->
     <p><strong>IMC:</strong> {{ resultado.imc }}
-    <br><small>Relación entre tu peso y tu altura. No mide grasa, pero sirve como referencia general.</small></p>
+    <br><small>Relación entre tu peso y tu altura. No mide grasa, pero sirve como referencia general.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if resultado.imc < 18.5 %}
+            <span class="amarillo">18.5 – 24.9 (bajo)</span>
+        {% elif resultado.imc <= 24.9 %}
+            <span class="verde">18.5 – 24.9 (saludable)</span>
+        {% else %}
+            <span class="rojo">18.5 – 24.9 (alto)</span>
+        {% endif %} 
+    </small></p>
 
     <p><strong>Relación cintura‑altura (WHtR):</strong> {{ resultado.whtr }}
-    <br><small>Indicador de riesgo metabólico. Valores altos sugieren acumulación de grasa abdominal.</small></p>
+    <br><small>Indicador de riesgo metabólico. Valores altos sugieren acumulación de grasa abdominal.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if resultado.whtr < 0.40 %}
+            <span class="amarillo">0.40 – 0.49 (muy bajo)</span>
+        {% elif resultado.whtr <= 0.49 %}
+            <span class="verde">0.40 – 0.49 (saludable)</span>
+        {% elif resultado.whtr <= 0.59 %}
+            <span class="amarillo">0.50 – 0.59 (riesgo moderado)</span>
+        {% else %}
+            <span class="rojo">≥ 0.60 (riesgo alto)</span>
+        {% endif %}
+    </small></p>
 
-    
 </div>
 {% endif %}
 

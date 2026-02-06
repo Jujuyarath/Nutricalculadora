@@ -57,7 +57,7 @@ def index():
             cadera = float(request.form["cadera"])
             resultado = calcular_medidas(sexo, peso, altura, cuello, cintura=cintura, cadera=cadera)
 
-    return render_template("index.html", resultado=resultado)
+    return render_template("index.html", resultado=resultado, sexo=sexo)
 
 import os 
 
