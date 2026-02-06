@@ -13,36 +13,105 @@
 <h1>Método Navy</h1>
 
 <form method="POST">
-    <label>Sexo:</label>
-    <select name="sexo" required>
-        <option value="M">Hombre</option>
-        <option value="F">Mujer</option>
-    </select><br><br>
+    <div>
+        <label>Sexo:</label>
+        <select name="sexo" required>
+            <option value="M">Hombre</option>
+            <option value="F">Mujer</option>
+        </select>
+    </div><br>
 
-    <label>Altura (cm):</label>
-    <input type="number" name="altura" required><br><br>
+    <div>
+        <label>Peso (kg):</label>
+        <input type="number" name="peso" required>
+    </div><br>
 
-    <label>Cuello (cm):</label>
-    <input type="number" name="cuello" required><br><br>
+    <div>
+        <label>Altura (cm):</label>
+        <input type="number" name="altura" required>
+    </div><br>
 
-    <label>Abdomen (cm) — solo hombres:</label>
-    <input type="number" name="abdomen"><br><br>
+    <div>
+        <label>Cuello (cm):</label>
+        <input type="number" name="cuello" required>
+    </div><br>
 
-    <label>Cintura (cm) — solo mujeres:</label>
-    <input type="number" name="cintura"><br><br>
+    <div>
+        <label>Abdomen (cm) — solo hombres:</label>
+        <input type="number" name="abdomen">
+    </div><br>
 
-    <label>Cadera (cm) — solo mujeres:</label>
-    <input type="number" name="cadera"><br><br>
+    <div>
+        <label>Cintura (cm) — solo mujeres:</label>
+        <input type="number" name="cintura">
+    </div><br>
+
+    <div>
+        <label>Cadera (cm) — solo mujeres:</label>
+        <input type="number" name="cadera">
+    </div><br>
 
     <button type="submit">Calcular</button>
 </form>
 
 {% if resultado %}
 <div class="resultado">
-    <h3>Porcentaje de grasa corporal:</h3>
-    <p><strong>{{ resultado }}%</strong></p>
+    <p><strong>Grasa corporal:</strong> {{ resultado.grasa }}%
+    <br><small>Porcentaje de tu peso total que corresponde a grasa. Es una medida clave de composición corporal.</small></p>
+
+    <p><strong>Masa grasa:</strong> {{ resultado.masa_grasa }} kg
+    <br><small>Cantidad de grasa en tu cuerpo expresada en kilos. Ayuda a ver cambios reales más allá del peso.</small></p>
+
+    <p><strong>Masa libre de grasa (FFM):</strong> {{ resultado.ffm }} kg
+    <br><small>Todo lo que no es grasa: músculo, hueso, órganos y agua. Es la base para estimar masa muscular.</small></p>
+
+    <p><strong>Masa muscular:</strong> {{ resultado.masa_muscular }} kg
+    <br><small>Estimación de la cantidad de músculo en tu cuerpo. Útil para evaluar progreso en fuerza y estética.</small></p>
+
+    <p><strong>Porcentaje muscular:</strong> {{ resultado.porcentaje_muscular }}%
+    <br><small>Proporción de tu peso total que corresponde a músculo. Complementa al porcentaje de grasa.</small></p>
+
+    <p><strong>IMC:</strong> {{ resultado.imc }}
+    <br><small>Relación entre tu peso y tu altura. No mide grasa, pero sirve como referencia general.</small></p>
+
+    <p><strong>Relación cintura‑altura (WHtR):</strong> {{ resultado.whtr }}
+    <br><small>Indicador de riesgo metabólico. Valores altos sugieren acumulación de grasa abdominal.</small></p>
+
+    
 </div>
 {% endif %}
+
+<script>
+function actualizarCampos() {
+    const sexo = document.querySelector('select[name="sexo"]').value;
+
+     const campoAbdomen = document.querySelector('input[name="abdomen"]').parentElement;
+     const campoCintura = document.querySelector('input[name="cintura"]').parentElement;
+     const campoCadera = document.querySelector('input[name="cadera"]').parentElement;
+
+     if(sexo === "M") {
+        campoAbdomen.style.display = "block";
+        campoCintura.style.display = "none";
+        campoCadera.style.display = "none";
+
+        document.querySelector('input[name="abdomen"]').required = true;
+        document.querySelector('input[name="cintura"]').required = false;
+        document.querySelector('input[name="cadera"]').required = false;
+
+    } else {
+        campoAbdomen.style.display = "none";
+        campoCintura.style.display = "block";
+        campoCadera.style.display = "block";
+
+        document.querySelector('input[name="abdomen"]').required = false;
+        document.querySelector('input[name="cintura"]').required = true;
+        document.querySelector('input[name="cadera"]').required = true;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", actualizarCampos);
+document.querySelector('select[name="sexo"]').addEventListener("change", actualizarCampos);
+</script>
 
 </body>
 </html>

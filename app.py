@@ -3,12 +3,41 @@ import math
 
 app = Flask(__name__)
 
-def calcular_grasa_navy(sexo, altura, cuello, abdomen=None, cintura=None, cadera=None):
-    if sexo =="M":
-        grasa = 86.010 *math.log10(abdomen - cuello) - 70.041 * math.log10(altura) + 36.76
+def calcular_medidas(sexo, peso, altura, cuello, abdomen=None, cintura=None, cadera=None):
+    #1. calcular % de grasa con formula navy
+    if sexo == "M":
+        grasa = 495 / (1.0324 - 0.19077 * math.log10(abdomen - cuello) + 0.15456 * math.log10(altura)) - 450
     else:
-        grasa = 163.205 * math.log10( cintura + cadera - cuello) - 97.684 * math.log10(altura) - 78.387
-    return grasa
+        grasa = 495 / (1.29579 - 0.35004 * math.log10(cintura + cadera - cuello) + 0.22100 * math.log10(altura)) - 450
+
+    #2. Masa grasa en kg 
+    masa_grasa = peso * (grasa / 100)
+
+    #3. Masa libre de grasa (FFM)
+    ffm = peso - masa_grasa
+
+    #4. Masa muscular (estimada)
+    masa_muscular = ffm * 0.52
+
+    #5. % muscular
+    porcentaje_muscular = (masa_muscular / peso) * 100
+
+    #6. IMC
+    imc = peso / ((altura / 100) **2)
+
+    #7. Relacion cintura-alura
+    whtr = (cintura if sexo == "F" else abdomen) / altura
+
+    #8. Regresar todo en un diccionario
+    return {
+        "grasa": grasa,
+        "masa_grasa": masa_grasa,
+        "ffm": ffm,
+        "masa_muscular": masa_muscular,
+        "porcentaje_muscular": porcentaje_muscular,
+        "imc": imc,
+        "whtr": whtr
+    }
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -16,18 +45,17 @@ def index():
 
     if request.method == "POST":
         sexo = request.form["sexo"]
+        peso = float(request.form["peso"])
         altura = float(request.form["altura"]) 
         cuello = float(request.form["cuello"])
 
         if sexo == "M":
             abdomen =float(request.form["abdomen"])
-            grasa = calcular_grasa_navy(sexo, altura, cuello, abdomen=abdomen)
+            resultado = calcular_medidas(sexo, peso, altura, cuello, abdomen=abdomen)
         else:
             cintura = float(request.form["cintura"])
             cadera = float(request.form["cadera"])
-            grasa = calcular_grasa_navy(sexo, altura, cuello, cintura=cintura, cadera=cadera)
-
-        resultado = round(grasa, 2)
+            resultado = calcular_medidas(sexo, peso, altura, cuello, cintura=cintura, cadera=cadera)
 
     return render_template("index.html", resultado=resultado)
 
