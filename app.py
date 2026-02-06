@@ -29,15 +29,15 @@ def calcular_medidas(sexo, peso, altura, cuello, abdomen=None, cintura=None, cad
     whtr = (cintura if sexo == "F" else abdomen) / altura
 
     #8. Regresar todo en un diccionario
-    return {
-        "grasa": grasa,
-        "masa_grasa": masa_grasa,
-        "ffm": ffm,
-        "masa_muscular": masa_muscular,
-        "porcentaje_muscular": porcentaje_muscular,
-        "imc": imc,
-        "whtr": whtr
-    }
+    return render_template("index.html", resultado={
+        "grasa": round(grasa, 2),
+        "masa_grasa": round(masa_grasa, 2),
+        "ffm": round(ffm, 2),
+        "masa_muscular": round(masa_muscular, 2),
+        "porcentaje_muscular": round(porcentaje_muscular, 2),
+        "imc": round(imc, 2),
+        "whtr": round(whtr, 2)
+    })
 
 @app.route("/", methods=["GET", "POST"])
 def index():
