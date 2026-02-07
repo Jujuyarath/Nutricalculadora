@@ -1,26 +1,29 @@
 from flask import Flask, render_template, request
 import math
-import smtplib
-from email.mime.text import MIMEText
-import os
 import threading
+import requests
 
 app = Flask(__name__)
 
 #Esta funcion siguiente es para enviar correos
 
-def enviar_correo(destinatario, asunto, mensaje):
-    remitente = "arath.cg73@gmail.com" #correo que envia
-    password = "jxepmcbwbzozundg" #contraseña de la app que da google
+def enviar_correo(destinatario, asunto, mensaje_html):
+    url = "https://api.brevo.com/v3/smtp/email"
 
-    msg = MIMEText(mensaje, "html")
-    msg["Subject"] = asunto
-    msg["From"] = remitente
-    msg["To"] = destinatario
+    payload = {
+        "sender": {"name": "Arath Calderón", "email": "arath.cg73@gmail.com"},
+        "to": [{"email": destinatario}],
+        "subject": asunto,
+        "htmlContent": mensaje_html
+    }
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(remitente, password)
-        server.sendmail(remitente, destinatario, msg.as_string())
+    headers = {
+        "accept": "application/json",
+        "api-key": os.getenv("BREVO_API_KEY"),
+        "content-type": "application/json"
+    }
+
+    requests.post(url, json=payload, headers=headers)
 
 def calcular_medidas(sexo, peso, altura, cuello, abdomen=None, cintura=None, cadera=None):
     #1. calcular % de grasa con formula navy
