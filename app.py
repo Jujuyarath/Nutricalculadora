@@ -1,7 +1,25 @@
 from flask import Flask, render_template, request
 import math
+import smtplib
+from email.mime.text import MIMEText
+import os
 
 app = Flask(__name__)
+
+#Esta funcion siguiente es para enviar correos
+
+def enviar_correo(destinatario, asunto, mensaje):
+    remitente = "arath.cg73@gmail.com" #correo que envia
+    password = "jxepmcbwbzozundg" #contraseña de la app que da google
+
+    msg = MIMEText(mensaje, "html")
+    msg["Subject"] = asunto
+    msg["From"] = remitente
+    msg["To"] = destinatario
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(remitente, password)
+        server.sendmail(remitente, destinatario, msg.as_string())
 
 def calcular_medidas(sexo, peso, altura, cuello, abdomen=None, cintura=None, cadera=None):
     #1. calcular % de grasa con formula navy
@@ -44,10 +62,15 @@ def index():
     resultado = None
 
     if request.method == "POST":
+        enviar_entrenador = "enviar_entrenador" in request.form
+
         sexo = request.form["sexo"]
         peso = float(request.form["peso"])
         altura = float(request.form["altura"]) 
         cuello = float(request.form["cuello"])
+
+        nombre = request.form["nombre"]
+        correo_usuario = request.form["correo"]
 
         if sexo == "M":
             abdomen =float(request.form["abdomen"])
@@ -56,6 +79,23 @@ def index():
             cintura = float(request.form["cintura"])
             cadera = float(request.form["cadera"])
             resultado = calcular_medidas(sexo, peso, altura, cuello, cintura=cintura, cadera=cadera)
+        
+        #Aqui se crea el mensaje que se va a enviar 
+        mensaje_html = f"""
+        <h2>Hola {nombre}, aquí están tus resultados</h2>
+        <p><strong>Grasa corporal:</strong> {resultado['grasa']}%</p>
+        <p><strong>Masa grasa:</strong> {resultado['masa_grasa']} kg</p>
+        <p><strong>Masa muscular:</strong> {resultado['masa_muscular']} kg</p>
+        <p><strong>IMC:</strong> {resultado['imc']}</p>
+        <p><strong>WHtR:</strong> {resultado['whtr']}</p>
+        """
+    
+        #Enviar correo al usuario
+        enviar_correo(correo_usuario, "Tus resultados por Arath Calderon", mensaje_html)
+
+        #Enviar copia al entrenador si marco la casilla
+        if enviar_entrenador:
+            enviar_correo("arath.cg73@gmail.com", "Resultados del cliente", mensaje_html)
 
     return render_template("index.html", resultado=resultado, sexo=sexo)
 
