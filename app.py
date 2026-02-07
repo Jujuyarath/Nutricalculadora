@@ -3,6 +3,7 @@ import math
 import smtplib
 from email.mime.text import MIMEText
 import os
+import threading
 
 app = Flask(__name__)
 
@@ -92,11 +93,11 @@ def index():
         """
     
         #Enviar correo al usuario
-        enviar_correo(correo_usuario, "Tus resultados por Arath Calderon", mensaje_html)
+        threading.Thread(target=enviar_correo, args=(correo_usuario, "Tus resultados por Arath Calderon", mensaje_html)).start()
 
         #Enviar copia al entrenador si marco la casilla
         if enviar_entrenador:
-            enviar_correo("arath.cg73@gmail.com", "Resultados del cliente", mensaje_html)
+            threading.Thread(target=enviar_correo, args=("arath.cg73@gmail.com", "Resultados del cliente", mensaje_html)).start()
 
     return render_template("index.html", resultado=resultado, sexo=sexo)
 
