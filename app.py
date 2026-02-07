@@ -60,6 +60,7 @@ def calcular_medidas(sexo, peso, altura, cuello, abdomen=None, cintura=None, cad
 @app.route("/", methods=["GET", "POST"])
 def index():
     resultado = None
+    sexo = None
 
     if request.method == "POST":
         enviar_entrenador = "enviar_entrenador" in request.form
