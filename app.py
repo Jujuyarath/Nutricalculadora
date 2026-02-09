@@ -19,7 +19,7 @@ def enviar_correo(destinatario, asunto, contenido_html):
 
     email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email": destinatario}],
-        sender={"email": "soporte@arathlabs.com", "name": "Arath Labs"}
+        sender={"email": "soporte@arathlabs.com", "name": "Arath Labs"},
         subject=asunto,
         html_content=contenido_html
     )
