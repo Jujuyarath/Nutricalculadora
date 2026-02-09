@@ -1,27 +1,36 @@
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 from flask import Flask, render_template, request
 import math
-import smtplib
 import os
-from email.mime.text import MIMEText
 import threading
 
 app = Flask(__name__)
 
 #Esta funcion siguiente es para enviar correos
 
-def enviar_correo(destinatario, asunto, html):
+def enviar_correo(destinatario, asunto, contenido_html):
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+
+    email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": destinatario}],
+        sender={"email": "soporte@arathlabs.com", "name": "Arath Labs"},
+        subject=asunto,
+        html_content=contenido_html
+    )
+
+    try:
+        api_instance.send_transac_email(email)
+        return True
+    except ApiException as e:
+        print("Error al enviar correo:", e)
+        return False
     
-    msg = MIMEText(html, "html")
-    msg["Subject"] = asunto
-    msg["From"] = "arath.cg73@outlook.com"
-    msg["To"] = destinatario
-
-    # Conectarse al servidor SMTP de brevo
-    with smtplib.SMTP("smtp-relay.brevo.com", 587) as server:
-        server.starttls()
-        server.login("arath.cg73@outlook.com", os.getenv("BREVO_API_KEY")) # LA CLAVE ES SMTP Y NO API
-        server.sendmail(msg["From"], [msg["To"]], msg.as_string())
-
 def calcular_medidas(sexo, peso, altura, cuello, abdomen=None, cintura=None, cadera=None):
     #1. calcular % de grasa con formula navy
     if sexo == "M":
