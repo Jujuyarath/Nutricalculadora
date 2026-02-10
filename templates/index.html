@@ -64,14 +64,18 @@
         <input type="number" name="cadera" step="0.01" onfocus="mostrarAyuda('cadera')">
     </div><br>
 
+    <p style="font-size:14px; color:#555; margin-bottom:5px;">
+        Llena estos campos solo si deseas recibir tus resultados por correo:
+    </p>
+
     <div>
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required>
+        <label>Nombre completo:</label>
+        <input type="text" name="nombre">
     </div><br>
 
     <div>
         <label>Correo para enviar resultados:</label>
-        <input type="email" name="correo" required>
+        <input type="email" name="correo">
     </div><br>
 
     <div>
@@ -260,6 +264,22 @@ function actualizarCampos() {
 
 document.addEventListener("DOMContentLoaded", actualizarCampos);
 document.querySelector('select[name="sexo"]').addEventListener("change", actualizarCampos);
+</script>
+
+<script>
+document.querySelector("form").addEventListener("submit", function(event) {
+    const correo = document.querySelector('input[name="correo"]').value.trim();
+
+    if (correo ==="") {
+        const confirmar = confirm(
+            "No se enviaran resultados a ningun correo. ¿Desea continuar?"
+        );
+
+        if (!confirmar) {
+            event.preventDefault(); // Cancelar el envio
+        }
+    }
+});
 </script>
 
 </body>
