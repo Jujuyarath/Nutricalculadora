@@ -175,6 +175,28 @@
 </div>
 {% endif %}
 
+<style>
+    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    h1 { text-align: center; }
+    .resultado { margin-top: 20px; padding: 10px; background: #ffffff; border-radius: 5px; }
+
+    /* COLORES */
+    .verde { color: #0a8a0a; font-weight: bold; }
+    .amarillo { color: #c7a600; font-weight: bold; }
+    .rojo { color: #c40000; font-weight: bold; }
+
+    /* ANIMACIÓN SUAVE PARA LAS IMÁGENES */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.97); }
+        to { opacity: 1; transform: scale(1); }
+    }
+</style>
+
 <script>
 function mostrarAyuda(campo) {
     const ayuda = document.getElementById("ayuda-medicion");
@@ -199,8 +221,10 @@ function mostrarAyuda(campo) {
     };
     if (imagenes[campo]) {
         ayuda.innerHTML = `
-            <img src="${imagenes[campo].img}" width="200"><br>
-            <small>${imagenes[campo].texto}</small>
+            <div class="fade-in">
+                <img src="${imagenes[campo].img}" width="200"><br>
+                <small>${imagenes[campo].texto}</small>
+        </div>  
         `;
     }
 }
