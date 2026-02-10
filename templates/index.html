@@ -21,6 +21,10 @@
     por Arath Calderón
 </p>
 
+<div id="ayuda-medicion" style="text-align:center; margin-bottom:20px;">
+    <!--Aqui aparecera la imagen y el texto-->
+</div>
+
 <form method="POST">
     <div>
         <label>Sexo:</label>
@@ -32,32 +36,32 @@
 
     <div>
         <label>Peso (kg):</label>
-        <input type="number" name="peso" required>
+        <input type="number" name="peso" step="0.01" required>
     </div><br>
 
     <div>
         <label>Altura (cm):</label>
-        <input type="number" name="altura" required>
+        <input type="number" name="altura" step="0.01" required>
     </div><br>
 
     <div>
         <label>Cuello (cm):</label>
-        <input type="number" name="cuello" required>
+        <input type="number" name="cuello" step="0.01" required onfocus="mostrarAyuda('cuello')">
     </div><br>
 
     <div>
         <label>Abdomen (cm) — solo hombres:</label>
-        <input type="number" name="abdomen">
+        <input type="number" name="abdomen" step="0.01" onfocus="mostrarAyuda('abdomen')">
     </div><br>
 
     <div>
         <label>Cintura (cm) — solo mujeres:</label>
-        <input type="number" name="cintura">
+        <input type="number" name="cintura" step="0.01" onfocus="mostrarAyuda('cintura')">
     </div><br>
 
     <div>
         <label>Cadera (cm) — solo mujeres:</label>
-        <input type="number" name="cadera">
+        <input type="number" name="cadera" step="0.01" onfocus="mostrarAyuda('cadera')">
     </div><br>
 
     <div>
@@ -170,6 +174,37 @@
 
 </div>
 {% endif %}
+
+<script>
+function mostrarAyuda(campo) {
+    const ayuda = document.getElementById("ayuda-medicion");
+
+    const imagenes = {
+        "cuello": {
+            img: "{{ url_for('static', filename='dcuello.webp') }}",
+            texto: "Mide tu cuello justo debajo de la manzana de adan, sin apretar."
+        },
+        "cintura": {
+            img: "{{ url_for('static', filename='cintura.webp') }}",
+            texto: "Mide tu abdomen a la altura del ombligo."
+        },
+        "cadera": {
+            img: "{{ url_for('static', filename='cadera.webp') }}",
+            texto: "Mide tu cadera en la parte más ancha de los glúteos, con los pies juntos."
+        },
+        "abdomen" : {
+            img: "{{ url_for('static', filename='dumbilical.webp') }}",
+            texto: "Mide tu abdomen a la altura del ombligo."
+        }
+    };
+    if (imagenes[campo]) {
+        ayuda.innerHTML = `
+            <img src="${imagenes[campo].img}" width="200"><br>
+            <small>${imagenes[campo].texto}</small>
+        `;
+    }
+}
+</script>
 
 <script>
 function actualizarCampos() {
