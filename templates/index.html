@@ -29,12 +29,16 @@
         position: fixed;
         top: 0;
         left: -250px; /* oculto fuera de pantalla */
-        background: #111;
+        background: transparent; /* transparente cuando está cerrado */
         overflow-x: hidden;
         transition: 0.3s;
         padding: 20px;
         color: white;
         z-index: 999;
+    }
+
+    #menu-lateral.abierto {
+        background: #111; 
     }
 
     #menu-lateral a {
@@ -47,6 +51,10 @@
 
     #menu-lateral a:hover {
         color: #00c3ff;
+    }
+
+    #menu-btn.abiero {
+        left: 260px; /*Hace que se mueva a la derecha cuando se abra*/
     }
 
     /* ANIMACIÓN SUAVE PARA LAS IMÁGENES */
@@ -328,7 +336,17 @@ document.querySelector("form").addEventListener("submit", function(event) {
 <script>
 function abrirMenu() {
     const menu = document.getElementById("menu-lateral");
-    menu.style.left = menu.style.left === "0px" ? "-250px" : "0px"; 
+    const btn = document.getElementById("menu-btn")
+    
+    if (menu.classList.contains("abierto")) {
+        menu.classList.remove("abierto");
+        btn.classList.remove("abierto");
+        menu.style.left = "-250px";
+    } else {
+        menu.classList.add("abierto");
+        btn.classList.add("abierto");
+        menu.style.left = "0px";
+    }
 }
 </script>
 
