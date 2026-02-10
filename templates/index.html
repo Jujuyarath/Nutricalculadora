@@ -6,13 +6,78 @@
         body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
         h1 { text-align: center; }
         .resultado { margin-top: 20px; padding: 10px; background: #ffffff; border-radius: 5px; }
+
         /* COLORES */
         .verde { color: #0a8a0a; font-weight: bold; }
         .amarillo { color: #c7a600; font-weight: bold; }
         .rojo { color: #c40000; font-weight: bold; }
+
+    /* Botón hamburguesa */
+    #menu-btn {
+        font-size: 26px;
+        cursor: pointer;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1000;
+    }
+
+    /* Menú lateral */
+    #menu-lateral {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #111;
+        overflow-x: hidden;
+        transition: 0.3s;
+        padding: 20px;
+        color: white;
+        z-index: 999;
+    }
+
+    #menu-lateral a {
+        display: block;
+        color: white;
+        padding: 10px 0;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    #menu-lateral a:hover {
+        color: #00c3ff;
+    }
+
+    /* ANIMACIÓN SUAVE PARA LAS IMÁGENES */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.97); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
     </style>
 </head>
 <body>
+
+<!-- BOTÓN Y MENÚ LATERAL -->
+<div id="menu-btn" onclick="abrirMenu()">☰</div>
+
+<div id="menu-lateral">
+    <h2 style="margin-top:0;">Arath Labs</h2>
+    <a href="/">Inicio</a>
+    <a href="#">Ingresar</a>
+    <a href="#">Panel</a>
+    <a href="#">Configuración</a>
+
+    <p style="margin-top:30px; font-size:13px; color:#aaa;">
+        ⚠️ Esta sección está en mantenimiento
+    </p>
+</div>
 
 <h1 style="text-align:center; font-weight:700; letter-spacing:1px;">
     Método Navy
@@ -179,28 +244,6 @@
 </div>
 {% endif %}
 
-<style>
-    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
-    h1 { text-align: center; }
-    .resultado { margin-top: 20px; padding: 10px; background: #ffffff; border-radius: 5px; }
-
-    /* COLORES */
-    .verde { color: #0a8a0a; font-weight: bold; }
-    .amarillo { color: #c7a600; font-weight: bold; }
-    .rojo { color: #c40000; font-weight: bold; }
-
-    /* ANIMACIÓN SUAVE PARA LAS IMÁGENES */
-    .fade-in {
-        opacity: 0;
-        animation: fadeIn 0.4s ease-in-out forwards;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.97); }
-        to { opacity: 1; transform: scale(1); }
-    }
-</style>
-
 <script>
 function mostrarAyuda(campo) {
     const ayuda = document.getElementById("ayuda-medicion");
@@ -280,6 +323,13 @@ document.querySelector("form").addEventListener("submit", function(event) {
         }
     }
 });
+</script>
+
+<script>
+function abrirMenu() {
+    const menu = document.getElementById("menu-lateral");
+    menu.style.width = menu.style.width === "250px" ? "0" : "250px";
+}
 </script>
 
 </body>
