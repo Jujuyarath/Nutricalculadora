@@ -25,10 +25,10 @@
     /* Menú lateral */
     #menu-lateral {
         height: 100%;
-        width: 0;
+        width: 250px; /* ancho real del menú */
         position: fixed;
         top: 0;
-        left: 0;
+        left: -250px; /* oculto fuera de pantalla */
         background: #111;
         overflow-x: hidden;
         transition: 0.3s;
@@ -328,7 +328,7 @@ document.querySelector("form").addEventListener("submit", function(event) {
 <script>
 function abrirMenu() {
     const menu = document.getElementById("menu-lateral");
-    menu.style.width = menu.style.width === "250px" ? "0" : "250px";
+    menu.style.left = menu.style.left === "0px" ? "-250px" : "0px"; 
 }
 </script>
 
