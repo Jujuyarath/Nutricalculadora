@@ -4,8 +4,18 @@ from flask import Flask, render_template, request
 import math
 import os
 import threading
+import bcrypt
+import psycopg2
 
 app = Flask(__name__)
+app.secret_key = "1.3.6.4.2.3.45.2.34.523.5423.65_fsd.jyr.nsf.5425.dfg.43.df.sky.ky.gnf.543.dsfghsf."
+
+conn = psycopg2.connect(
+    host="dpg-d65t1c0gjchc73fh6i30-a"
+    database="arathlabs_db"
+    user="arathlabs_db_user"
+    password="EVXGekJcJvVGGOnOUiGcOeTiBhUWEWKx"
+)
 
 #Esta funcion siguiente es para enviar correos
 
@@ -111,6 +121,32 @@ def index():
     return render_template("index.html", resultado=resultado, sexo=sexo)
 
 import os 
+
+@app.route("/login", methods=["POST"])
+def login():
+    correo = request.form["correo"]
+    password = request.form["password"]
+
+    cur = conn.cursor()
+    cur.execute("SELECT id, contraseña FROM usuarios WHERE correo = %s", (correo,))
+    user = cur.fetchone()
+
+    if not user:
+        return "Usuario no encontrado"
+    
+    user_id, hashed_password = user
+    
+    if bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8")):
+        session["user_id"] = user_id
+        return redirect("/panel")
+    else:
+        return "Contraseña incorrecta"
+
+@app.route("/panel")
+def panel():
+    if "user_id" not in session:
+        return redirect("/")
+    return "Bienvenido al panel privado de Arath Labs"
 
 if __name__ == "__main__":
         port = int(os.environ.get("PORT", 5000))
