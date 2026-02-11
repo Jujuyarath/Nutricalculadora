@@ -79,7 +79,7 @@
 <div id="menu-lateral">
     <h2 style="margin-top:0;">Arath Labs</h2>
     <a href="/">Inicio</a>
-    <a href="#">Ingresar</a>
+    <a href="#" onclick="mostrarLogin()">Ingresar</a>
     <a href="#">Panel</a>
     <a href="#">Configuración</a>
 
@@ -87,6 +87,8 @@
         ⚠️ Esta sección está en mantenimiento
     </p>
 </div>
+
+<div id="contenido-principal">
 
 <h1 style="text-align:center; font-weight:700; letter-spacing:1px;">
     Método Navy
@@ -349,6 +351,35 @@ function abrirMenu() {
         menu.style.left = "0px";
     }
 }
+</script>
+
+<script>
+    function mostrarLogin() {
+        const cont = document.getElementById("contenido-principal");
+
+        cont.innerHTML = `
+            <h1 style="text-align:center; font-weight:700; letter-spacing:1px;">
+                Ingresar
+            </h1>
+            <p style="text-align:center; margin-top:-10px; color:#555;">
+                Accede a tu cuenta de Arath Labs
+            </p>
+
+            <form method="POST" action="/login">
+                <div>
+                    <label>Correo:</label>
+                    <input type="email" name="correo" required>
+                </div><br>
+
+                <div>
+                    <label>Contraseña:</label>
+                    <input type="password" name="password" required>
+                </div><br>
+
+                <button type="submit">Entrar</button>
+            </form>
+        `;
+    }
 </script>
 
 </body>
