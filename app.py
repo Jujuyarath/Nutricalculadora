@@ -11,9 +11,9 @@ app = Flask(__name__)
 app.secret_key = "1.3.6.4.2.3.45.2.34.523.5423.65_fsd.jyr.nsf.5425.dfg.43.df.sky.ky.gnf.543.dsfghsf."
 
 conn = psycopg2.connect(
-    host="dpg-d65t1c0gjchc73fh6i30-a"
-    database="arathlabs_db"
-    user="arathlabs_db_user"
+    host="dpg-d65t1c0gjchc73fh6i30-a.oregon-postgres.render.com",
+    database="arathlabs_db",
+    user="arathlabs_db_user",
     password="EVXGekJcJvVGGOnOUiGcOeTiBhUWEWKx"
 )
 
