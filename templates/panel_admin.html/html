@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Arath Labs</title>
+    <style>
+        body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; margin:0; }
+        .navbar { background:#1a1a1a; padding:15px 25px; border-bottom:1px solid #333; }
+        .navbar h1 { color:#00d4ff; margin:0; }
+        .container { padding:30px; }
+        .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; margin-bottom:20px; }
+        a { color:#00d4ff; text-decoration:none; font-weight:bold; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>Modo Administrador – {{ nombre }}</h1>
+    </div>
+
+    <div class="container">
+        <h2>Selecciona el panel que quieres ver</h2>
+
+        <div class="card">
+            <a href="/panel?modo=coach">Entrar como Coach</a>
+        </div>
+
+        <div class="card">
+            <a href="/panel?modo=nutri">Entrar como Nutriólogo</a>
+        </div>
+
+        <div class="card">
+            <a href="/panel?modo=cliente">Entrar como Cliente Independiente</a>
+        </div>
+
+        <div class="card">
+            <a href="/panel?modo=visualizacion">Entrar como Cliente Asignado</a>
+        </div>
+    </div>
+</body>
+</html>
