@@ -171,6 +171,97 @@ def logout():
     session.clear()
     return redirect("/")
 
+@app.route("/mis_clientes")
+def mis_clientes():
+    if "user_id" not in session:
+        return redirect("/")
+    
+    cur = conn.cursor()
+
+    # Verificar rol
+    cur.execute("SELECT rol FROM usuarios WHERE id = %s", (session["user_id"],))
+    rol = cur.fetchone()[0]
+
+    if rol not in ("coach", "nutri"):
+        return "No tienes permiso para ver esta página"
+    
+    # Obtener clientes asignados
+    cur.execute("""
+        SELECT u.id, u.nombre, u.correo
+        FROM asignaciones a
+        JOIN usuarios u ON a.cliente_id = u.id
+        WHERE a.profesional_id = %s
+    """, (session["user_id"],))
+
+    clientes = cur.fetchall()
+
+    return render_template("mis_clientes.html", clientes=clientes)
+
+@app.route("/cliente/<int:cliente_id>")
+def ver_cliente(cliente_id):
+    if "user_id" not in session:
+        return redirect("/")
+    
+    cur = conn.cursor()
+
+    # Verificar que el cliente pertenece al coach/nutri
+    cur.execute("""
+        SELECT 1 FROM asignaciones
+        WHERE profesional_id = %s AND cliente_id = %s
+    """, (session["user_id"], cliente_id))
+
+    if cur.fetchone() is None:
+        return "No tienes permiso para ver este cliente"
+    
+    # Obtener datos del cliente
+    cur.execute("SELECT nombre FROM usuarios WHERE id = %s", (cliente_id,))
+    nombre = cur.fetchone()[0]
+
+    # Obtener historial
+    cur.execute("""
+        SELECT grasa, masa_muscular, imc, whtr, fecha
+        FROM historial
+        WHERE usuario_id = %s
+        ORDER BY fecha DESC
+    """, (cliente_id,))
+
+    historial = cur.fetchall()
+
+    return render_template("historial_cliente.html", nombre=nombre, historial=historial, cliente_id=cliente_id)
+
+@app.route("/registrar/<int:cliente_id>", methods=["GET", "POST"])
+def registrar(cliente_id):
+    if "user_id" not in session:
+        return redirect("/")
+    
+    cur = conn.cursor()
+
+    # Verificar que el cliente pertenece al coach/nutri
+    cur.execute("""
+        SELECT 1 FROM asignaciones
+        WHERE profesional_id = %s AND cliente_id = %s
+    """, (session["user_id"], cliente_id))
+
+    if cur.fetchone() is None:
+        return "No tienes permiso para registrar medidas de este cliente"
+    
+    if request.method == "POST":
+        grasa = request.form["grasa"]
+        masa = request.form["masa"]
+        imc = request.form["imc"]
+        whtr = request.form["whtr"]
+
+        cur.execute("""
+            INSERT INTO historial (usuario_id, grasa, masa_muscular, imc, whtr)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (cliente_id, grasa, masa, imc, whtr))
+
+        conn.commit()
+
+        return redirect(f"/cliente/{cliente_id}")
+    
+    return render_template("registrar.html", cliente_id=cliente_id)
+
 if __name__ == "__main__":
         port = int(os.environ.get("PORT", 5000))
         app.run(host="0.0.0.0", port=port)

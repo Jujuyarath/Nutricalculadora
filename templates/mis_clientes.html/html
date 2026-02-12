@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Clientes – Arath Labs</title>
+    <style>
+        body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; margin:0; }
+        .navbar { background:#1a1a1a; padding:15px 25px; border-bottom:1px solid #333; }
+        .navbar h1 { color:#00d4ff; margin:0; }
+        .container { padding:30px; }
+        .cliente { background:#1a1a1a; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #333; }
+        a { color:#00d4ff; text-decoration:none; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>Mis Clientes</h1>
+    </div>
+
+    <div class="container">
+        <h2>Clientes asignados</h2>
+
+        {% for c in clientes %}
+        <div class="cliente">
+            <strong>{{ c[1] }}</strong> — {{ c[2] }}
+            <br>
+            <a href="/cliente/{{ c[0] }}">Ver historial</a>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
