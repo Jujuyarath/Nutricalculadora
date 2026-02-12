@@ -24,7 +24,7 @@
     </div>
 
     <div class="container">
-        <h2>Bienvenido</h2>
+        <h2>Bienvenido {{ nombre }}</h2>
         <p>Aquí puedes llevar tu propio progreso de forma sencilla.</p>
 
         <div class="cards">

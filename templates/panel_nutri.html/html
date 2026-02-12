@@ -24,10 +24,17 @@
     </div>
 
     <div class="container">
-        <h2>Bienvenido Nutriólogo</h2>
+        <h2>Bienvenido Nutriólogo {{ nombre }}</h2>
         <p>Gestiona pacientes, analiza composición corporal y genera reportes.</p>
 
         <div class="cards">
+            <div class="card">
+                <h3>Mis Pacientes</h3>
+                <p>Ver y gestionar tus pacientes asignados.</p>
+                <a href="/mis_clientes" style="color:#00d4ff;">Entrar</a>
+            </div>
+            
+            </div>
             <div class="card">
                 <h3>Registrar medidas</h3>
                 <p>Ingresa datos de tus pacientes para análisis detallado.</p>

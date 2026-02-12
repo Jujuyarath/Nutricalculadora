@@ -152,13 +152,13 @@ def panel():
     rol = cur.fetchone()[0]
 
     if rol == "coach":
-        return render_template("panel_coach.html")
+        return render_template("panel_coach.html", nombre=nombre)
     
     elif rol == "nutri":
-        return render_template("panel_nutri.html")
+        return render_template("panel_nutri.html", nombre=nombre)
     
     elif rol == "cliente_independiente":
-        return render_template("panel_cliente.html")
+        return render_template("panel_cliente.html", nombre=nombre)
     
     elif rol == "cliente_asignado":
         return render_template("panel_visualizacion.html")
