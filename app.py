@@ -148,8 +148,13 @@ def panel():
         return redirect("/")
     
     cur = conn.cursor()
-    cur.execute("SELECT rol FROM usuarios WHERE id = %s", (session["user_id"],))
-    rol = cur.fetchone()[0]
+    cur.execute("SELECT nombre, rol FROM usuarios WHERE id = %s", (session["user_id"],))
+    data = cur.fetchone()
+
+    if not data:
+        return "Usuario no encontrado"
+    
+    nombre, rol = data
 
     #MODO ADMIN: permite elegir panel
     modo = request.args.get("modo")
@@ -166,7 +171,7 @@ def panel():
 
     #PANEL ADMIN (MENU)
     if rol == "admin":
-        return render_template("panel_admin.html", nomre=nombre)
+        return render_template("panel_admin.html", nombre=nombre)
     
     #PANEL COACH
     elif rol == "coach":
@@ -182,7 +187,7 @@ def panel():
     
     #PANEL CLIENTE ASIGNADO
     elif rol == "cliente_asignado":
-        return render_template("panel_visualizacion.html")
+        return render_template("panel_visualizacion.html", nombre=nombre)
     
     else:
         return "Rol no reconocido"
