@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Resultados – Arath Labs</title>
+
+    <style>
+        body { margin:0; background:#0f0f0f; color:#e6e6e6; font-family:Arial; }
+        .navbar { background:#1a1a1a; padding:15px 25px; border-bottom:1px solid #333; }
+        .navbar h1 { color:#00d4ff; margin:0; }
+        .container { padding:30px; }
+        .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; margin-bottom:20px; }
+        .card h3 { color:#00d4ff; margin-top:0; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>Mis Resultados</h1>
+    </div>
+
+    <div class="container">
+        <p>Estos son tus resultados registrados por tu entrenador o nutriólogo.</p>
+
+        <div class="card">
+            <h3>Último resultado</h3>
+            <p>Aquí aparecerán tus datos más recientes.</p>
+        </div>
+
+        <div class="card">
+            <h3>Historial</h3>
+            <p>Consulta tus resultados anteriores.</p>
+        </div>
+    </div>
+</body>
+</html>

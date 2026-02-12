@@ -146,7 +146,30 @@ def login():
 def panel():
     if "user_id" not in session:
         return redirect("/")
-    return "Bienvenido al panel privado de Arath Labs"
+    
+    cur = conn.cursor()
+    cur.execute("SELECT rol FROM usuarios WHERE id = %s", (session["user_id"],))
+    rol = cur.fetchone()[0]
+
+    if rol == "coach":
+        return render_template("panel_coach.html")
+    
+    elif rol == "nutri":
+        return render_template("panel_nutri.html")
+    
+    elif rol == "cliente_independiente":
+        return render_template("panel_cliente.html")
+    
+    elif rol == "cliente_asignado":
+        return render_template("panel_visualizacion.html")
+    
+    else:
+        return "Rol no reconocido"
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 if __name__ == "__main__":
         port = int(os.environ.get("PORT", 5000))
