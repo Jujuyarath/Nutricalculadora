@@ -154,7 +154,7 @@ def panel():
     #MODO ADMIN: permite elegir panel
     modo = request.args.get("modo")
 
-    if rol == "admin" and modo
+    if rol == "admin" and modo:
         if modo == "coach":
             return render_template("panel_coach.html", nombre=nombre)
         if modo == "nutri":
