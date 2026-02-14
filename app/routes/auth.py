@@ -6,7 +6,7 @@ auth_bp = Blueprint("auth", __name__)
 #HOME / LOGIN PAGE
 @auth_bp.route("/", methods=["GET"])
 def home():
-    return render_template("index.html")
+    return render_template("public/index.html")
 
 # LOGIN
 @auth_bp.route("/login", methods=["POST"])

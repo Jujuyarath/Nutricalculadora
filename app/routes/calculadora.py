@@ -47,7 +47,7 @@ def index():
         if enviar_entrenador:
             threading.Thread(target=enviar_correo, args=("arath.cg73@gmail.com", "Resultados del cliente", mensaje_html)).start()
 
-    return render_template("index.html", resultado=resultado, sexo=sexo)
+    return render_template("public/index.html", resultado=resultado, sexo=sexo)
 
 # VER CLIENTE
 @calculadora_bp.route("/cliente/<int:cliente_id>")

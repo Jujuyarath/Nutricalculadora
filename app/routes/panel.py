@@ -22,33 +22,33 @@ def panel():
 
     if rol == "admin" and modo:
         if modo == "coach":
-            return render_template("panel_coach.html", nombre=nombre)
+            return render_template("coach/panel_coach.html", nombre=nombre)
         if modo == "nutri":
-            return render_template("panel_nutri.html", nombre=nombre)
+            return render_template("nutri/panel_nutri.html", nombre=nombre)
         if modo == "cliente":
-            return render_template("panel_cliente.html", nombre=nombre)
+            return render_template("cliente/panel_cliente.html", nombre=nombre)
         if modo == "visualizacion":
-            return render_template("panel_visualizacion.html", nombre=nombre)
+            return render_template("cliente/panel_visualizacion.html", nombre=nombre)
 
     #PANEL ADMIN (MENU)
     if rol == "admin":
-        return render_template("panel_admin.html", nombre=nombre)
+        return render_template("admin/panel_admin.html", nombre=nombre)
     
     #PANEL COACH
     elif rol == "coach":
-        return render_template("panel_coach.html", nombre=nombre)
+        return render_template("coach/panel_coach.html", nombre=nombre)
     
     #PANEL NUTRIOLOGO
     elif rol == "nutri":
-        return render_template("panel_nutri.html", nombre=nombre)
+        return render_template("nutri/panel_nutri.html", nombre=nombre)
     
     #PANEL CLIENTE INDEPENDIENTE
     elif rol == "cliente_independiente":
-        return render_template("panel_cliente.html", nombre=nombre)
+        return render_template("cliente/panel_cliente.html", nombre=nombre)
     
     #PANEL CLIENTE ASIGNADO
     elif rol == "cliente_asignado":
-        return render_template("panel_visualizacion.html", nombre=nombre)
+        return render_template("cliente/panel_visualizacion.html", nombre=nombre)
     
     else:
         return "Rol no reconocido"
