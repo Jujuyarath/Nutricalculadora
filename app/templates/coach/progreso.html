@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Progreso – {{ nombre }}</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
+     h1 { color:#00d4ff; }
+     .card {
+        background:#1a1a1a;
+        padding:20px;
+        border-radius:12px;
+        border:1px solid #333;
+        margin-bottom:30px;
+     }
+     canvas { margin-top: 20px; }
+</style>
+</head>
+
+<body>
+
+<h1>Progreso de {{ nombre }}</h1>
+
+<div class="card">
+    <h2>Grasa Corporal (%)</h2>
+    <canvas id="grasaChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>Masa Muscular (kg)</h2>
+    canvas id="masaChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>IMC</h2>
+    <canvas id="imcChart"></canvas>
+</div>
+
+<div class="card">
+    <h2>WHtR</h2>
+    <canvas id="whtrChart"></canvas>
+</div>
+
+<script>
+    const fechas = {{ fechas|tojson }};
+    const grasa = {{ grasa|tojson }};
+    const masa = {{ masa|tojson }};
+    const imc = {{ imc|tojson }};
+    const whtr = {{ whtr|tojson }};
+
+    function crearGrafica(id, label, data, color) {
+        new Chart(document.getElementById(id), {
+            type: 'line',
+            data: {
+                labels: fechas,
+                datasets: [{
+                    label: label,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: color + "33",
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    x: { ticks: { color: "#e6e6e6" } },
+                    y: { ticks: { color: "#e6e6e6" } }
+                },
+                plugins: {
+                    legend: { labels: { color: "#e6e6e6" } }
+                }
+            }
+        });
+    }
+
+    crearGrafica("grasaChart", "Grasa (%)", grasa, "#00d4ff");
+    crearGrafica("masaChart", "Masa Muscular", masa, "#00ff88");
+    crearGrafica("imcChart", "IMC", imc, "#ffdd00");
+    crearGrafica("whtrChart", "WHtR", whtr, "#ff4d4d");
+</script>
+
+</body>
+</html>

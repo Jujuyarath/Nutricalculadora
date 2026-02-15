@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Asignar Rutina</title>
+<style>
+    body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
+    .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; max-width:450px; margin:auto; }
+    select, button { width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #333; background:#0f0f0f; color:white; }
+    button { background:#00d4ff; color:black; font-weight:bold; }
+</style>
+</head>
+
+<body>
+<div class="card">
+    <h2>Asignar Rutina</h2>
+
+    <form method="POST">
+        <label>Selecciona una rutina</label>
+        <select name="rutina_id">
+            {% for r in rutinas %}
+            <option value="{{ r[0] }}">{{ r[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Asignar</button>
+    </form>
+</div>
+</body>
+</html>

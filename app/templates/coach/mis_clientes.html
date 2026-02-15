@@ -2,32 +2,82 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mis Clientes – Arath Labs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Clientes – Coach (Arath Labs)</title>
+
     <style>
-        body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; margin:0; }
-        .navbar { background:#1a1a1a; padding:15px 25px; border-bottom:1px solid #333; }
-        .navbar h1 { color:#00d4ff; margin:0; }
-        .container { padding:30px; }
-        .cliente { background:#1a1a1a; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #333; }
-        a { color:#00d4ff; text-decoration:none; }
+        :root {
+             --bg: #0f0f0f;
+             --panel: #1a1a1a;
+             --border: #2a2a2a;
+             --text: #e6e6e6;
+             --accent: #00d4ff;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        h1 {
+            color: var(--accent);
+        }
+
+        .cliente-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .cliente-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .acciones a {
+            margin-left: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            background: var(--accent);
+            color: black;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
-    <div class="navbar">
-        <h1>Mis Clientes</h1>
-    </div>
-
     <div class="container">
-        <h2>Clientes asignados</h2>
+        <h1>Mis Clientes</h1>
 
         {% for c in clientes %}
-        <div class="cliente">
-            <strong>{{ c[1] }}</strong> — {{ c[2] }}
-            <br>
-            <a href="/cliente/{{ c[0] }}">Ver historial</a>
+        <div class="cliente-card">
+            </div>
+                 <h3>{{ c[1] }}</h3>
+                 <p>Última grasa: <strong>{{ c[2] }}%</strong></p>
+                 <p>Última actualización: {{ c[3] }}</p>
+            </div>
+
+            <div class="acciones">
+                <a href="/progreso/{{ c[0] }}">Progreso</a>
+                <a href="/registrar/{{ c[0] }}">Registrar</a>
+                <a href="/asignar_rutina/{{ c[0] }}">Rutina</a>
+            </div>
         </div>
         {% endfor %}
     </div>
 </body>
 </html>
+      

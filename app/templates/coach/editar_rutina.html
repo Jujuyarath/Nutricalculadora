@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Editar Rutina</title>
+<style>
+     body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
+     .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; max-width:600px; margin:auto; }
+     input, textarea { width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #333; background:#0f0f0f; color:white; }
+     button { margin-top:15px; padding:10px; width:100%; background:#00d4ff; border:none; border-radius:8px; font-weight:bold; }
+     .ejercicio { background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid #333; }
+</style>
+</head>
+
+<body>
+<div class="card">
+    <h2>Agregar ejercicios</h2>
+
+    <form method="POST">
+        <label>Nombre del ejercicio</label>
+        <input type="text" name="nombre" required>
+
+        <label>Series</label>
+        <input type="number" name="series">
+
+        <label>Repeticiones</label>
+        <input type="text" name="repeticiones">
+
+        <label>Peso sugerido</label>
+        <input type="text" name="peso">
+
+        <label>Notas</label>
+        <textarea name="notas"></textarea>
+
+        <button type="submit">Agregar ejercicio</button>
+    </form>
+
+    <h3>Ejercicios agregados</h3>
+
+    {% for e in ejercicios %}
+    <div class="ejercicio">
+        <strong>{{ e[2] }}</strong> — {{ e[3] }} series, {{ e[4] }} reps
+        <br>Peso: {{ e[5] }}
+        <br>{{ e[6] }}
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>
