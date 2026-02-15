@@ -11,21 +11,39 @@ def mis_clientes():
     cur = conn.cursor()
 
     # Obtener clientes asignados al coach
-    cur.execute("""
-        SELECT u.id, u.nombre,
-                COALESCE(h.grasa, '—') AS grasa,
-                COALESCE(h.fecha, '—') AS fecha
-        FROM asignaciones a
-        JOIN usuarios u ON u.id = a.cliente_id
-        LEFT JOIN (
-            SELECT usuario_id, grasa, fecha
-            FROM historial
-            ORDER BY fecha DESC
-        ) h ON h.usuario_id = u.id
-        WHERE a.profesional_id = %s
-        GROUP BY u.id, u.nombre, h.grasa, h.fecha
-        ORDER BY u.nombre ASC
-    """, (session["user_id"],))
+    if session.get("rol") == "admin":
+        cur.execute("""
+            SELECT u.id, u.nombre,
+                    COALESCE(h.grasa, '—') AS grasa,
+                    COALESCE(h.fecha, '—') AS fecha
+            FROM usuarios u
+            LEFT JOIN (
+                SELECT usuario_id, grasa, fecha
+                FROM historial
+                ORDER BY fecha DESC
+            ) h ON h.usuario_id = u.id
+            WHERE u.rol = 'cliente'
+            GROUP BY u.id, u.nombre, h.grasa, h.fecha
+            ORDER BY u.nombre ASC 
+        """) 
+    
+    else:
+        # Si es COACH → ver solo sus clientes asignados
+        cur.execute("""
+            SELECT u.id, u.nombre,
+                    COALESCE(h.grasa, '—') AS grasa,
+                    COALESCE(h.fecha, '—') AS fecha
+            FROM asignaciones a
+            JOIN usuarios u ON u.id = a.cliente_id
+            LEFT JOIN (
+                SELECT usuario_id, grasa, fecha
+                FROM historial
+                ORDER BY fecha DESC
+            ) h ON h.usuario_id = u.id
+            WHERE a.profesional_id = %s
+            GROUP BY u.id, u.nombre, h.grasa, h.fecha
+            ORDER BY u.nombre ASC
+        """, (session["user_id"],))
 
     clientes = cur.fetchall()
 
@@ -94,6 +112,15 @@ def asignar_rutina(cliente_id):
     conn = current_app.conn
     cur = conn.cursor()
 
+    if session.get("rol") != "admin":
+        cur.execute("""
+            SELECT 1 FROM asignaciones
+            WHERE profesional_id = %s AND cliente_id = %s
+        """, (session["user_id"], cliente_id))
+
+        if cur.fetchone() is None:
+            return "No tienes permiso para ver este cliente"
+  
     if request.method == "POST":
         rutina_id = request.form["rutina_id"]
 
@@ -123,6 +150,15 @@ def progreso(cliente_id):
     conn = current_app.conn
     cur = conn.cursor()
 
+    if session.get("rol") != "admin":
+        cur.execute("""
+            SELECT 1 FROM asignaciones
+            WHERE profesional_id = %s AND cliente_id = %s
+        """, (session["user_id"], cliente_id))
+
+        if cur.fetchone() is None:
+            return "No tienes permiso para ver este progreso"
+    
     # Obtener nombre del cliente
     cur.execute("SELECT nombre FROM usuarios WHERE id = %s", (cliente_id,))
     nombre = cur.fetchone()[0]
