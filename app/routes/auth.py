@@ -35,30 +35,3 @@ def login():
 def logout():
     session.clear()
     return redirect("/")
-
-@auth_bp.route("/mis_clientes")
-def mis_clientes():
-    if "user_id" not in session:
-        return redirect("/")
-    
-    conn = current_app.conn
-    cur = conn.cursor()
-
-    # Verificar rol
-    cur.execute("SELECT rol FROM usuarios WHERE id = %s", (session["user_id"],))
-    rol = cur.fetchone()[0]
-
-    if rol not in ("coach", "nutri"):
-        return "No tienes permiso para ver esta página"
-    
-    # Obtener clientes asignados
-    cur.execute("""
-        SELECT u.id, u.nombre, u.correo
-        FROM asignaciones a
-        JOIN usuarios u ON a.cliente_id = u.id
-        WHERE a.profesional_id = %s
-    """, (session["user_id"],))
-
-    clientes = cur.fetchall()
-
-    return render_template("mis_clientes.html", clientes=clientes)
