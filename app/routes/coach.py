@@ -16,19 +16,24 @@ def mis_clientes():
             SELECT 
                 u.id, 
                 u.nombre,
-                COALESCE(h.grasa, '—') AS grasa,
-                COALESCE(h.fecha, '—') AS fecha
+                (
+                    SELECT grasa
+                    FROM historial 
+                    WHERE usuario_id = u.id 
+                    ORDER BY fecha DESC 
+                    LIMIT 1
+                ) AS grasa,
+                (
+                    SELECT fecha 
+                    FROM historial 
+                    WHERE usuario_id = u.id 
+                    ORDER BY fecha DESC
+                    LIMIT 1
+                ) AS fecha
             FROM usuarios u
-            LEFT JOIN LATERAL (
-                SELECT grasa, fecha
-                FROM historial
-                WHERE usuario_id = u.id
-                ORDER BY fecha DESC
-                LIMIT 1
-            ) h ON TRUE
             WHERE u.rol = 'cliente'
-            ORDER BY u.nombre ASC 
-        """) 
+            ORDER BY u.nombre ASC;
+        """)
     
     else:
         # Si es COACH → ver solo sus clientes asignados
@@ -36,19 +41,24 @@ def mis_clientes():
             SELECT 
                 u.id, 
                 u.nombre,
-                COALESCE(h.grasa, '—') AS grasa,
-                COALESCE(h.fecha, '—') AS fecha
+                (
+                    SELECT grasa 
+                    FROM historial
+                    WHERE usuario_id = u.id 
+                    ORDER BY fecha DESC 
+                    LIMIT 1
+                ) AS grasa,
+                (
+                    SELECT fecha 
+                    FROM historial 
+                    WHERE usuario_id = u.id 
+                    ORDER BY fecha DESC 
+                    LIMIT 1
+                ) AS fecha
             FROM asignaciones a
             JOIN usuarios u ON u.id = a.cliente_id
-            LEFT JOIN LATERAL (
-                SELECT grasa, fecha
-                FROM historial
-                WHERE usuario_id = u.id
-                ORDER BY fecha DESC
-                LIMIT 1
-            ) h ON TRUE
             WHERE a.profesional_id = %s
-            ORDER BY u.nombre ASC
+            ORDER BY u.nombre ASC;
         """, (session["user_id"],))
 
     clientes = cur.fetchall()
