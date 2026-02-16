@@ -13,35 +13,41 @@ def mis_clientes():
     # Obtener clientes asignados al coach
     if session.get("rol") == "admin":
         cur.execute("""
-            SELECT u.id, u.nombre,
-                    COALESCE(h.grasa, '—') AS grasa,
-                    COALESCE(h.fecha, '—') AS fecha
+            SELECT 
+                u.id, 
+                u.nombre,
+                COALESCE(h.grasa, '—') AS grasa,
+                COALESCE(h.fecha, '—') AS fecha
             FROM usuarios u
-            LEFT JOIN (
-                SELECT usuario_id, grasa, fecha
+            LEFT JOIN LATERAL (
+                SELECT grasa, fecha
                 FROM historial
+                WHERE usuario_id = u.id
                 ORDER BY fecha DESC
-            ) h ON h.usuario_id = u.id
+                LIMIT 1
+            ) h ON TRUE
             WHERE u.rol = 'cliente'
-            GROUP BY u.id, u.nombre, h.grasa, h.fecha
             ORDER BY u.nombre ASC 
         """) 
     
     else:
         # Si es COACH → ver solo sus clientes asignados
         cur.execute("""
-            SELECT u.id, u.nombre,
-                    COALESCE(h.grasa, '—') AS grasa,
-                    COALESCE(h.fecha, '—') AS fecha
+            SELECT 
+                u.id, 
+                u.nombre,
+                COALESCE(h.grasa, '—') AS grasa,
+                COALESCE(h.fecha, '—') AS fecha
             FROM asignaciones a
             JOIN usuarios u ON u.id = a.cliente_id
-            LEFT JOIN (
-                SELECT usuario_id, grasa, fecha
+            LEFT JOIN LATERAL (
+                SELECT grasa, fecha
                 FROM historial
+                WHERE usuario_id = u.id
                 ORDER BY fecha DESC
-            ) h ON h.usuario_id = u.id
+                LIMIT 1
+            ) h ON TRUE
             WHERE a.profesional_id = %s
-            GROUP BY u.id, u.nombre, h.grasa, h.fecha
             ORDER BY u.nombre ASC
         """, (session["user_id"],))
 
