@@ -58,18 +58,24 @@ def ver_cliente(cliente_id):
     conn = current_app.conn
     cur = conn.cursor()
 
-    # Verificar que el cliente pertenece al coach/nutri
-    cur.execute("""
-        SELECT 1 FROM asignaciones
-        WHERE profesional_id = %s AND cliente_id = %s
-    """, (session["user_id"], cliente_id))
+    # ADMIN → acceso total
+    if session.get("rol") != "admin":
+        cur.execute("""
+            SELECT 1 FROM asignaciones
+            WHERE profesional_id = %s AND cliente_id = %s
+        """, (session["user_id"], cliente_id))
 
-    if cur.fetchone() is None:
-        return "No tienes permiso para ver este cliente"
-    
+        if cur.fetchone() is None:
+            return "No tienes permiso para ver este cliente"
+
     # Obtener datos del cliente
     cur.execute("SELECT nombre FROM usuarios WHERE id = %s", (cliente_id,))
-    nombre = cur.fetchone()[0]
+    row = cur.fetchone()
+
+    if row is None:
+        return "Cliente no encontrado"
+    
+    nombre = row[0]
 
     # Obtener historial
     cur.execute("""
@@ -92,14 +98,15 @@ def registrar(cliente_id):
     conn = current_app.conn
     cur = conn.cursor()
 
-    # Verificar que el cliente pertenece al coach/nutri
-    cur.execute("""
-        SELECT 1 FROM asignaciones
-        WHERE profesional_id = %s AND cliente_id = %s
-    """, (session["user_id"], cliente_id))
+    # ADMIN → acceso total
+    if session.get("rol") != "admin":
+        cur.execute("""
+            SELECT 1 FROM asignaciones
+            WHERE profesional_id = %s AND cliente_id = %s
+        """, (session["user_id"], cliente_id))
 
-    if cur.fetchone() is None:
-        return "No tienes permiso para registrar medidas de este cliente"
+        if cur.fetchone() is None:
+            return "No tienes permiso para registrar medidas de este cliente"
     
     if request.method == "POST":
         grasa = request.form["grasa"]
