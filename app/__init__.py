@@ -18,9 +18,11 @@ def create_app():
     from .routes.panel import panel_bp
     from .routes.auth import auth_bp
     from .routes.calculadora import calculadora_bp
+    from .routes.coach import coach_bp
 
     app.register_blueprint(panel_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(calculadora_bp)
+    app.register_blueprint(coach_bp)  
     
     return app
