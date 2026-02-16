@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, current_app
+from flask import Blueprint, render_template, session, redirect, current_app, request
 
 coach_bp = Blueprint("coach", __name__)
 
