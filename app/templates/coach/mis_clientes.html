@@ -64,6 +64,7 @@
 
         {% for c in clientes %}
         <div class="cliente-card">
+
             </div>
                  <h3>{{ c[1] }}</h3>
                  <p>Última grasa: <strong>{{ c[2] }}%</strong></p>
@@ -75,6 +76,7 @@
                 <a href="/registrar/{{ c[0] }}">Registrar</a>
                 <a href="/asignar_rutina/{{ c[0] }}">Rutina</a>
             </div>
+            
         </div>
         {% endfor %}
     </div>
