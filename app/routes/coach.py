@@ -110,7 +110,7 @@ def editar_rutina(rutina_id):
         cur.execute("""
             INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas, dia)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (rutina_id, dia, nombre, series, repeticiones, peso, notas))
+        """, (rutina_id, nombre, series, repeticiones, peso, notas, dia))
 
         conn.commit()
 
