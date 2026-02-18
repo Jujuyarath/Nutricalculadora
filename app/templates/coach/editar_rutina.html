@@ -9,6 +9,26 @@
      input, textarea { width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #333; background:#0f0f0f; color:white; }
      button { margin-top:15px; padding:10px; width:100%; background:#00d4ff; border:none; border-radius:8px; font-weight:bold; }
      .ejercicio { background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid #333; }
+
+     /* Caja de sugerencias */
+     .sugerencias {
+        background:#1a1a1a;
+        border:1px solid #333;
+        border-radius:8px;
+        margin-top:5px;
+        display:none;
+        position:absolute;
+        width:100%;
+        z-index:20;
+     }
+     .sugerencias div {
+        padding:10px;
+        cursor:pointer;
+     }
+     .sugerencias div:hover {
+        background:#00d4ff;
+        color:black;
+     }
 </style>
 </head>
 
@@ -19,6 +39,9 @@
     <form method="POST">
         <label>Nombre del ejercicio</label>
         <input type="text" name="nombre" required>
+
+        <!-- Caja de sugerencias -->
+         <div id="sugerencias" class="sugerencias"></div>
 
         <label>Series</label>
         <input type="number" name="series">
@@ -45,5 +68,42 @@
     </div>
     {% endfor %}
 </div>
+
+<script>
+const input = document.getElementById("nombre");
+const box = document.getElementById("sugerencias");
+
+input.addEventListener("input", async () => {
+    const q = input.value.trim();
+
+    if (q.length < 2) {
+        box.style.display = "none";
+        return;
+    }
+
+    const res = await fetch(`/buscar_ejercicios?q=${q}`);
+    const data = await res.json();
+
+    box.innerHTML = "";
+
+    if (data.resultados.length === 0) {
+        box.style.display = "none";
+        return;
+    }
+
+    data.resultados.forEach(ej => {
+        const div = document.createElement("div");
+        div.textContent = ej;
+        div.onclick = () => {
+            input.value = ej;
+            box.style.display = "none";
+        };
+        box.appendChild(div);
+    });
+
+    box.style.display = "block";
+});
+</script>
+
 </body>
 </html>

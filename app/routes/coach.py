@@ -205,3 +205,20 @@ def progreso(cliente_id):
         imc=imc,
         whtr=whtr
     )
+
+# Autocompletar ejercicios
+@coach_bp.route("/buscar_ejercicios")
+def buscar_ejercicios():
+    q = request.args.get("q", "").lower()
+
+    conn = current_app.conn
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT nombre FROM ejercicios_base
+        WHERE LOWER(nombre) LIKE %s
+        LIMIT 10
+    """, (f"%{q}%",))
+
+    resultados = [r[0] for r in cur.fetchall()]
+    return {"resultados": resultados}
