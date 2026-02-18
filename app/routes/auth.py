@@ -16,16 +16,18 @@ def login():
 
     conn = current_app.conn
     cur = conn.cursor()
-    cur.execute("SELECT id, contraseña FROM usuarios WHERE correo = %s", (correo,))
+    cur.execute("SELECT id, contraseña, nombre, rol FROM usuarios WHERE correo = %s", (correo,))
     user = cur.fetchone()
 
     if not user:
         return "Usuario no encontrado"
     
-    user_id, hashed_password = user
+    user_id, hashed_password, nombre, rol = user
     
     if bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8")):
         session["user_id"] = user_id
+        session["rol"] = rol
+        session["nombre"] = nombre
         return redirect("/panel")
     else:
         return "Contraseña incorrecta"
