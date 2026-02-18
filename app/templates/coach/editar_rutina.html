@@ -72,15 +72,44 @@
 
     <h3>Ejercicios agregados</h3>
 
-    {% for e in ejercicios %}
-    <div class="ejercicio">
-        <strong>{{ e[3] }}</strong> — {{ e[4] }} series, {{ e[5] }} reps
-        <br>Día: {{ e[2] }}
-        <br>Peso: {{ e[6] }}
-        <br>{{ e[7] }}
-    </div>
+    {% set dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] %}
+
+    {% for d in dias %}
+       <h2 style="margin-top:25px; color:#00d4ff;">{{ d }}</h2>
+
+        <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+            <tr style="background:#222;">
+                <th style="padding:8px; border:1px solid #333;">Ejercicio</th>
+                <th style="padding:8px; border:1px solid #333;">Series</th>
+                <th style="padding:8px; border:1px solid #333;">Reps</th>
+                <th style="padding:8px; border:1px solid #333;">Peso</th>
+                <th style="padding:8px; border:1px solid #333;">Notas</th>
+            </tr>
+
+            {% set hay = false %}
+
+            {% for e in ejercicios %}
+                {% if e[0] == d %}
+                    {% set hay = true %}
+                    <tr>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[1] }}</td>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[2] }}</td>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[3] }}</td>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[4] if e[4] else "—" }}</td>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[5] if e[5] else "—" }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            {% if not hay %}
+                <tr>
+                    <td colspan="5" style="padding:8px; border:1px solid #333; color:#666;"> 
+                        No hay ejercicios para este día.
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
     {% endfor %}
-</div>
 
 <script>
 const input = document.getElementById("nombre");
