@@ -37,8 +37,20 @@
     <h2>Agregar ejercicios</h2>
 
     <form method="POST">
+        
+        <label>Día</label>
+        <select name="dia">
+            <option value="Lunes">Lunes</option>
+            <option value="Martes">Martes</option>
+            <option value="Miércoles">Miércoles</option>
+            <option value="Jueves">Jueves</option>
+            <option value="Viernes">Viernes</option>
+            <option value="Sábado">Sábado</option>
+            <option value="Domingo">Domingo</option>
+        </select>
+
         <label>Nombre del ejercicio</label>
-        <input type="text" name="nombre" required>
+        <input type="text" id="nombre" name="nombre" autocomplete="off" required>
 
         <!-- Caja de sugerencias -->
          <div id="sugerencias" class="sugerencias"></div>
@@ -62,9 +74,10 @@
 
     {% for e in ejercicios %}
     <div class="ejercicio">
-        <strong>{{ e[2] }}</strong> — {{ e[3] }} series, {{ e[4] }} reps
-        <br>Peso: {{ e[5] }}
-        <br>{{ e[6] }}
+        <strong>{{ e[3] }}</strong> — {{ e[4] }} series, {{ e[5] }} reps
+        <br>Día: {{ e[2] }}
+        <br>Peso: {{ e[6] }}
+        <br>{{ e[7] }}
     </div>
     {% endfor %}
 </div>

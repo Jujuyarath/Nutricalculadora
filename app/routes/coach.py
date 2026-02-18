@@ -100,6 +100,7 @@ def editar_rutina(rutina_id):
     cur = conn.cursor()
 
     if request.method == "POST":
+        dia = request.form["dia"]
         nombre = request.form["nombre"]
         series = request.form["series"]
         repeticiones = request.form["repeticiones"]
@@ -107,14 +108,30 @@ def editar_rutina(rutina_id):
         notas = request.form["notas"]
 
         cur.execute("""
-            INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (rutina_id, nombre, series, repeticiones, peso, notas))
+            INSERT INTO ejercicios (rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (rutina_id, dia, nombre, series, repeticiones, peso, notas))
 
         conn.commit()
 
     # OBTENER EJERCICIOS EXISTENTES
-    cur.execute("SELECT * FROM ejercicios WHERE rutina_id = %s", (rutina_id,))
+    cur.execute("""
+        SELECT dia, nombre, series, repeticiones, peso_sugerido, notas
+        FROM ejercicios
+        WHERE rutina_id = %s
+        ORDER BY 
+            CASE dia
+                WHEN 'Lunes' THEN 1
+                WHEN 'Martes' THEN 2
+                WHEN 'Miércoles' THEN 3
+                WHEN 'Jueves' THEN 4
+                WHEN 'Viernes' THEN 5
+                WHEN 'Sábado' THEN 6
+                WHEN 'Domingo' THEN 7
+            END,
+            id ASC
+    """, (rutina_id,))
+
     ejercicios = cur.fetchall()
 
     return render_template("coach/editar_rutina.html", ejercicios=ejercicios, rutina_id=rutina_id)
