@@ -108,7 +108,7 @@ def editar_rutina(rutina_id):
         notas = request.form["notas"]
 
         cur.execute("""
-            INSERT INTO ejercicios (rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas)
+            INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas, dia)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (rutina_id, dia, nombre, series, repeticiones, peso, notas))
 
