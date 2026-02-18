@@ -71,23 +71,30 @@ def crear_rutina():
     if "user_id" not in session:
         return redirect("/")
     
+    conn = current_app.conn
+    cur = conn.cursor()
+
     if request.method == "POST":
-        nombre = request.form["nombre"]
-        objetivo = request.form["objetivo"]
+        try:
+            nombre = request.form["nombre"]
+            objetivo = request.form["objetivo"]
 
-        conn = current_app.conn
-        cur = conn.cursor()
+        
 
-        cur.execute("""
-            INSERT INTO rutinas (profesional_id, nombre, objetivo)
-            VALUES (%s, %s, %s) RETURNING id
-        """, (session["user_id"], nombre, objetivo))
+            cur.execute("""
+                INSERT INTO rutinas (profesional_id, nombre, objetivo)
+                VALUES (%s, %s, %s) RETURNING id
+            """, (session["user_id"], nombre, objetivo))
 
-        rutina_id = cur.fetchone()[0]
-        conn.commit()
+            rutina_id = cur.fetchone()[0]
+            conn.commit()
 
-        return redirect(f"/editar_rutina/{rutina_id}")
+            return redirect(f"/editar_rutina/{rutina_id}")
     
+        except Exception as e:
+            conn.rollback()
+            raise e
+
     return render_template("coach/crear_rutina.html")
 
 # EDITAR RUTINA
@@ -100,19 +107,24 @@ def editar_rutina(rutina_id):
     cur = conn.cursor()
 
     if request.method == "POST":
-        dia = request.form["dia"]
-        nombre = request.form["nombre"]
-        series = request.form["series"]
-        repeticiones = request.form["repeticiones"]
-        peso = request.form["peso"]
-        notas = request.form["notas"]
+        try:
+            dia = request.form["dia"]
+            nombre = request.form["nombre"]
+            series = request.form["series"]
+            repeticiones = request.form["repeticiones"]
+            peso = request.form["peso"]
+            notas = request.form["notas"]
 
-        cur.execute("""
-            INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas, dia)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (rutina_id, nombre, series, repeticiones, peso, notas, dia))
+            cur.execute("""
+                INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas, dia)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (rutina_id, nombre, series, repeticiones, peso, notas, dia))
 
-        conn.commit()
+            conn.commit()
+
+        except Exception as e:
+            conn.rollback()
+            raise e
 
     # OBTENER EJERCICIOS EXISTENTES
     cur.execute("""
