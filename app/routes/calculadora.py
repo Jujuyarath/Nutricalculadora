@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, current_app 
+from flask import Blueprint, render_template, request, redirect, session
 import threading
 from app.utils.grasa import calcular_medidas 
 from app.utils.correo import enviar_correo 
@@ -55,39 +55,45 @@ def ver_cliente(cliente_id):
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
-    # ADMIN → acceso total
-    if session.get("rol") != "admin":
-        cur.execute("""
-            SELECT 1 FROM asignaciones
-            WHERE profesional_id = %s AND cliente_id = %s
-        """, (session["user_id"], cliente_id))
+    try:
+        # ADMIN → acceso total
+        if session.get("rol") != "admin":
+            cur.execute("""
+                SELECT 1 FROM asignaciones
+                WHERE profesional_id = %s AND cliente_id = %s
+            """, (session["user_id"], cliente_id))
 
-        if cur.fetchone() is None:
-            return "No tienes permiso para ver este cliente"
+            if cur.fetchone() is None:
+                return "No tienes permiso para ver este cliente"
 
-    # Obtener datos del cliente
-    cur.execute("SELECT nombre FROM usuarios WHERE id = %s", (cliente_id,))
-    row = cur.fetchone()
+        # Obtener datos del cliente
+        cur.execute("SELECT nombre FROM usuarios WHERE id = %s", (cliente_id,))
+        row = cur.fetchone()
 
-    if row is None:
-        return "Cliente no encontrado"
+        if row is None:
+            return "Cliente no encontrado"
     
-    nombre = row[0]
+        nombre = row[0]
 
-    # Obtener historial
-    cur.execute("""
-        SELECT grasa, masa_muscular, imc, whtr, fecha
-        FROM historial
-        WHERE usuario_id = %s
-        ORDER BY fecha DESC
-    """, (cliente_id,))
+        # Obtener historial
+        cur.execute("""
+            SELECT grasa, masa_muscular, imc, whtr, fecha
+            FROM historial
+            WHERE usuario_id = %s
+            ORDER BY fecha DESC
+        """, (cliente_id,))
 
-    historial = cur.fetchall()
+        historial = cur.fetchall()
 
-    return render_template("historial_cliente.html", nombre=nombre, historial=historial, cliente_id=cliente_id)
+        return render_template("coach/historial_cliente.html", nombre=nombre, historial=historial, cliente_id=cliente_id)
+    
+    finally:
+        cur.close()
+        conn.close()
 
 # REGISTRAR MEDIDAS
 @calculadora_bp.route("/registrar/<int:cliente_id>", methods=["GET", "POST"])
@@ -95,32 +101,38 @@ def registrar(cliente_id):
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
-    # ADMIN → acceso total
-    if session.get("rol") != "admin":
-        cur.execute("""
-            SELECT 1 FROM asignaciones
-            WHERE profesional_id = %s AND cliente_id = %s
-        """, (session["user_id"], cliente_id))
+    try:
+        # ADMIN → acceso total
+        if session.get("rol") != "admin":
+            cur.execute("""
+                SELECT 1 FROM asignaciones
+                WHERE profesional_id = %s AND cliente_id = %s
+            """, (session["user_id"], cliente_id))
 
-        if cur.fetchone() is None:
-            return "No tienes permiso para registrar medidas de este cliente"
+            if cur.fetchone() is None:
+                return "No tienes permiso para registrar medidas de este cliente"
     
-    if request.method == "POST":
-        grasa = request.form["grasa"]
-        masa = request.form["masa"]
-        imc = request.form["imc"]
-        whtr = request.form["whtr"]
+        if request.method == "POST":
+            grasa = request.form["grasa"]
+            masa = request.form["masa"]
+            imc = request.form["imc"]
+            whtr = request.form["whtr"]
 
-        cur.execute("""
-            INSERT INTO historial (usuario_id, grasa, masa_muscular, imc, whtr)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (cliente_id, grasa, masa, imc, whtr))
+            cur.execute("""
+                INSERT INTO historial (usuario_id, grasa, masa_muscular, imc, whtr)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (cliente_id, grasa, masa, imc, whtr))
 
-        conn.commit()
+            conn.commit()
 
-        return redirect(f"/cliente/{cliente_id}")
+            return redirect(f"/cliente/{cliente_id}")
     
-    return render_template("registrar.html", cliente_id=cliente_id)
+        return render_template("registrar.html", cliente_id=cliente_id)
+    
+    finally:
+        cur.close()
+        conn.close()
