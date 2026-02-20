@@ -4,3 +4,13 @@ bcrypt
 requests
 sib_api_v3_sdk
 gunicorn
+
+# Estabilidad
+blinker
+itsdangerous
+jinja2
+werkzeug
+
+python-dotenv
+pytz
+email-validator
