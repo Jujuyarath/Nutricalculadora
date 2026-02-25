@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, current_app, request
+from flask import Blueprint, render_template, session, redirect, request
 
 coach_bp = Blueprint("coach", __name__)
 
@@ -7,7 +7,8 @@ def mis_clientes():
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
     # Obtener clientes asignados al coach
@@ -75,7 +76,8 @@ def crear_rutina():
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
     if request.method == "POST":
@@ -107,7 +109,8 @@ def editar_rutina(rutina_id):
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
     if request.method == "POST":
@@ -162,7 +165,8 @@ def asignar_rutina(cliente_id):
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
     try:
@@ -203,7 +207,8 @@ def progreso(cliente_id):
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
     try:
@@ -256,7 +261,8 @@ def progreso(cliente_id):
 def buscar_ejercicios():
     q = request.args.get("q", "").lower()
 
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
 
     try:
