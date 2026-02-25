@@ -45,11 +45,11 @@
 </div>
 
 <script>
-    const fechas = {{ fechas|tojson }};
-    const grasa = {{ grasa|tojson }};
-    const masa = {{ masa|tojson }};
-    const imc = {{ imc|tojson }};
-    const whtr = {{ whtr|tojson }};
+    const fechas = {{ fechas|default([])|tojson }};
+    const grasa = {{ grasa|default([])|tojson }};
+    const masa = {{ masa|default([])|tojson }};
+    const imc = {{ imc|default([])|tojson }};
+    const whtr = {{ whtr|default([])|tojson }};
 
     function crearGrafica(id, label, data, color) {
         new Chart(document.getElementById(id), {
