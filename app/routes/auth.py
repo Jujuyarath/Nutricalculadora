@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, session, current_app
-import bcrypt
+from flask import Blueprint, render_template, request, redirect, session
+import bcrypt 
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -14,10 +14,16 @@ def login():
     correo = request.form["correo"]
     password = request.form["password"]
 
-    conn = current_app.conn
+    from app.db import get_conn 
+    conn = get_conn()
     cur = conn.cursor()
-    cur.execute("SELECT id, contraseña, nombre, rol FROM usuarios WHERE correo = %s", (correo,))
-    user = cur.fetchone()
+
+    try:
+        cur.execute("SELECT id, contraseña, nombre, rol FROM usuarios WHERE correo = %s", (correo,))
+        user = cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
 
     if not user:
         return "Usuario no encontrado"
