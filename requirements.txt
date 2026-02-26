@@ -3,7 +3,7 @@ werkzeug
 jinja2
 itsdangerous
 blinker
-psycopg2-binary==2.9.9
+psycopg
 bcrypt
 requests
 sib_api_v3_sdk
