@@ -1,5 +1,5 @@
 # app/db.py
-import psycopg2_binary as psycopg2
+import psycopg2
 
 def get_conn():
     return psycopg2.connect(
