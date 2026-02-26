@@ -128,19 +128,13 @@
             {% if ejercicios_dia %}
                 {% for e in ejercicios_dia %}
                     <tr>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[2] }}</td>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[3] }}</td>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[4] }}</td>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[5] if e[5] else "—" }}</td>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[6] if e[6] else "—" }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="nombre">{{ e[2] }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="series">{{ e[3] }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="repeticiones">{{ e[4] }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="peso_sugerido">{{ e[5] if e[5] else "—" }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="notas">{{ e[6] if e[6] else "—" }}</td>
 
                         <td style="padding:8px; border:1px solid #333; text-align:center;">
-
-                            <!-- Botón editar -->
-                            <a href="/editar_ejercicio/{{ e[0] }}"
-                                 style="background:#333; padding:4px 8px; border-radius:6px; text-decoration:none; color:#00d4ff; font-size:12px; margin-right:4px; display:inline-block;">
-                                 Editar
-                            </a>
 
                             <!-- Botón eliminar -->
                             <form method="POST" action="/eliminar_ejercicio" style="display:inline;">
@@ -202,5 +196,44 @@ input.addEventListener("blur", () => {
 });
 </script>
 
+<script>
+document.querySelectorAll(".editable").forEach(cell => {
+     cell.addEventListener("click", () => {
+          if (cell.querySelector("input")) return;
+
+          const valorActual = cell.textContent.trim();
+          const input = document.createElement("input");
+          input.value = valorActual;
+          input.style.width = "90%";
+          input.style.background = "#0f0f0f";
+          input.style.color = "white";
+          input.style.border = "1px solid #333";
+          input.style.borderRadius = "6px";
+          input.style.padding = "4px";
+
+          cell.textContent = "";
+          cell.appendChild(input);
+          input.focus();
+
+          input.addEventListener("blur", async () => {
+               const nuevoValor = input.value.trim();
+               const id = cell.dataset.id;
+               const campo = cell.dataset.campo;
+
+               cell.textContent = nuevoValor;
+
+               await fetch("/actualizar_ejercicio", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                         id: id,
+                         campo: campo,
+                         valor: nuevoValor
+                    })
+               });
+          });
+     });
+});
+</script>
 </body>
 </html>
