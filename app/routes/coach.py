@@ -287,3 +287,76 @@ def buscar_ejercicios():
     except Exception as e:
         conn.rollback()
         raise e
+
+@coach_bp.route("/eliminar_ejercicio", methods=["POST"])
+def eliminar_ejercicio():
+    if "user_id" not in session:
+        return redirect("/")
+
+    ejercicio_id = request.form["id"]
+
+    from app.db import get_conn
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        # Obtener rutina a la que pertenece
+        cur.execute("SELECT rutina_id FROM ejercicios WHERE id = %s", (ejercicio_id,))
+        rutina_id = cur.fetchone()[0]
+
+        # Eliminar ejercicio
+        cur.execute("DELETE FROM ejercicios WHERE id = %s", (ejercicio_id,))
+        conn.commit()
+
+        return redirect(f"/editar_rutina/{rutina_id}")
+
+    except Exception as e:
+        conn.rollback()
+        raise e
+
+@coach_bp.route("/editar_ejercicio/<int:ejercicio_id>", methods=["GET", "POST"])
+def editar_ejercicio(ejercicio_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    from app.db import get_conn
+    conn = get_conn()
+    cur = conn.cursor()
+
+    if request.method == "POST":
+        dia = request.form["dia"]
+        nombre = request.form["nombre"]
+        series = request.form["series"]
+        repeticiones = request.form["repeticiones"]
+        peso = request.form["peso"]
+        notas = request.form["notas"]
+
+        try:
+            cur.execute("""
+                UPDATE ejercicios
+                SET dia=%s, nombre=%s, series=%s, repeticiones=%s, peso_sugerido=%s, notas=%s
+                WHERE id=%s
+            """, (dia, nombre, series, repeticiones, peso, notas, ejercicio_id))
+
+            conn.commit()
+
+            # Obtener rutina para redirigir
+            cur.execute("SELECT rutina_id FROM ejercicios WHERE id = %s", (ejercicio_id,))
+            rutina_id = cur.fetchone()[0]
+
+            return redirect(f"/editar_rutina/{rutina_id}")
+
+        except Exception as e:
+            conn.rollback()
+            raise e
+
+    # Obtener datos del ejercicio para mostrar en el formulario
+    cur.execute("""
+        SELECT rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas
+        FROM ejercicios
+        WHERE id=%s
+    """, (ejercicio_id,))
+
+    ejercicio = cur.fetchone()
+
+    return render_template("coach/editar_ejercicio.html", ejercicio=ejercicio)
