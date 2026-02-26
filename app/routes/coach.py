@@ -162,7 +162,7 @@ def editar_rutina(rutina_id):
                 dias_dict[dia] = []
             dias_dict[dia].append(e)
             
-        return render_template("coach/editar_rutina.html", dias_dict=dias_dict)
+        return render_template("coach/editar_rutina.html", dias_dict=dias_dict, rutina_id=rutina_id)
     
     except Exception as e:
         conn.rollback()
