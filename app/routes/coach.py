@@ -136,7 +136,7 @@ def editar_rutina(rutina_id):
     # OBTENER EJERCICIOS EXISTENTES
     try:
         cur.execute("""
-            SELECT dia, nombre, series, repeticiones, peso_sugerido, notas
+            SELECT id, dia, nombre, series, repeticiones, peso_sugerido, notas
             FROM ejercicios
             WHERE rutina_id = %s
             ORDER BY 
