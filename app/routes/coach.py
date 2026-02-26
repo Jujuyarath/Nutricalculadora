@@ -360,3 +360,31 @@ def editar_ejercicio(ejercicio_id):
     ejercicio = cur.fetchone()
 
     return render_template("coach/editar_ejercicio.html", ejercicio=ejercicio)
+
+@coach_bp.route("/actualizar_ejercicio", methods=["POST"])
+def actualizar_ejercicio():
+    if "user_id" not in session:
+        return {"status": "error", "msg": "No autorizado"}, 403
+
+    data = request.get_json()
+    ejercicio_id = data["id"]
+    campo = data["campo"]
+    valor = data["valor"]
+
+    campos_validos = ["nombre", "series", "repeticiones", "peso_sugerido", "notas"]
+    if campo not in campos_validos:
+        return {"status": "error", "msg": "Campo inválido"}, 400
+
+    from app.db import get_conn
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        query = f"UPDATE ejercicios SET {campo} = %s WHERE id = %s"
+        cur.execute(query, (valor, ejercicio_id))
+        conn.commit()
+        return {"status": "ok"}
+
+    except Exception as e:
+        conn.rollback()
+        return {"status": "error", "msg": str(e)}, 500
