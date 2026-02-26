@@ -172,10 +172,16 @@
 <script>
 const nombreInput = document.getElementById("nombre");
 const box = document.getElementById("sugerencias");
+let debounceTimer;
 
-nombreInput.addEventListener("input", async () => {
-    const q = nombreInput.value.trim();
+nombreInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(buscarEjercicios, 250);
+});
 
+async function buscarEjercicios() {
+     const q = nombreInput.value.trim();
+     
     if (q.length < 2) {
         box.style.display = "none";
         return;
@@ -203,8 +209,13 @@ nombreInput.addEventListener("input", async () => {
 
     box.style.display = "block";
 });
+     
 nombreInput.addEventListener("blur", () => {
-     setTimeout(() => box.style.display = "none", 150);
+     setTimeout(() => {
+          if (!box.matches(":hover")) {
+               box.style.display = "none";
+          }
+     }, 150);
 });
 </script>
 
