@@ -63,6 +63,15 @@
         background:#00d4ff;
         color:black;
      }
+
+     /* Restaurar bordes de tabla */
+     td, th {
+          border:1px solid #333 !important;
+     }
+
+     table {
+          border-collapse: collapse;
+     }
 </style>
 </head>
 
@@ -158,11 +167,11 @@
     {% endfor %}
 
 <script>
-const input = document.getElementById("nombre");
+const nombreInput = document.getElementById("nombre");
 const box = document.getElementById("sugerencias");
 
-input.addEventListener("input", async () => {
-    const q = input.value.trim();
+nombreInput.addEventListener("input", async () => {
+    const q = nombreInput.value.trim();
 
     if (q.length < 2) {
         box.style.display = "none";
@@ -183,7 +192,7 @@ input.addEventListener("input", async () => {
         const div = document.createElement("div");
         div.textContent = ej;
         div.onclick = () => {
-            input.value = ej;
+            nombreInput.value = ej;
             box.style.display = "none";
         };
         box.appendChild(div);
@@ -191,7 +200,7 @@ input.addEventListener("input", async () => {
 
     box.style.display = "block";
 });
-input.addEventListener("blur", () => {
+nombreInput.addEventListener("blur", () => {
      setTimeout(() => box.style.display = "none", 150);
 });
 </script>
