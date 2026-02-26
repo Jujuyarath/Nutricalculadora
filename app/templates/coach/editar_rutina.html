@@ -111,7 +111,7 @@
     {% for d in dias %}
        <h2 style="margin-top:25px; color:#00d4ff;">{{ d }}</h2>
 
-       {% set ejercicios_dia = ejercicios | selectattr(1, "equalto", d) | list %}
+       {% set ejercicios_dia = dias_dict.get(d, []) %}
 
         <table style="width:100%; border-collapse:collapse; margin-top:10px;">
             <tr style="background:#222;">
