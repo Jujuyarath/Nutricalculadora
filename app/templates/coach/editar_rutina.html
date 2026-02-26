@@ -138,15 +138,15 @@
 
                             <!-- Botón editar -->
                             <a href="/editar_ejercicio/{{ e[0] }}"
-                                 style="background:#ffaa00; padding:5px 8px; border-radius:6px; text-decoration:none; color:black; margin-right:5px;">
-                                 ✏️
+                                 style="background:#333; padding:4px 8px; border-radius:6px; text-decoration:none; color:#00d4ff; font-size:12px; margin-right:4px; display:inline-block;">
+                                 Editar
                             </a>
 
                             <!-- Botón eliminar -->
                             <form method="POST" action="/eliminar_ejercicio" style="display:inline;">
                                 <input type="hidden" name="id" value="{{ e[0] }}">
-                                <button style="background:#ff4444; padding:5px 8px; border:none; border-radius:6px; cursor:pointer;">
-                                     🗑️
+                                <button style="background:#331111; padding:4px 8px; border:none; border-radius:6px; cursor:pointer; color:#ff6666; font-size:12px;">
+                                     Borrar
                                 </button>
                             </form>
 
