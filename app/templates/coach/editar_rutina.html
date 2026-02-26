@@ -111,7 +111,7 @@
     {% for d in dias %}
        <h2 style="margin-top:25px; color:#00d4ff;">{{ d }}</h2>
 
-       {% set ejercicios_dia = ejercicios | selectattr(0, "equalto", d) | list %}
+       {% set ejercicios_dia = ejercicios | selectattr(1, "equalto", d) | list %}
 
         <table style="width:100%; border-collapse:collapse; margin-top:10px;">
             <tr style="background:#222;">
@@ -120,6 +120,7 @@
                 <th style="padding:8px; border:1px solid #333;">Reps</th>
                 <th style="padding:8px; border:1px solid #333;">Peso</th>
                 <th style="padding:8px; border:1px solid #333;">Notas</th>
+                <th style="padding:8px; border:1px solid #333;">Acciones</th>
             </tr>
 
            
@@ -127,16 +128,34 @@
             {% if ejercicios_dia %}
                 {% for e in ejercicios_dia %}
                     <tr>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[1] }}</td>
                         <td style="padding:8px; border:1px solid #333;">{{ e[2] }}</td>
                         <td style="padding:8px; border:1px solid #333;">{{ e[3] }}</td>
-                        <td style="padding:8px; border:1px solid #333;">{{ e[4] if e[4] else "—" }}</td>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[4] }}</td>
                         <td style="padding:8px; border:1px solid #333;">{{ e[5] if e[5] else "—" }}</td>
+                        <td style="padding:8px; border:1px solid #333;">{{ e[6] if e[6] else "—" }}</td>
+
+                        <td style="padding:8px; border:1px solid #333; text-align:center;">
+
+                            <!-- Botón editar -->
+                            <a href="/editar_ejercicio/{{ e[0] }}"
+                                 style="background:#ffaa00; padding:5px 8px; border-radius:6px; text-decoration:none; color:black; margin-right:5px;">
+                                 ✏️
+                            </a>
+
+                            <!-- Botón eliminar -->
+                            <form method="POST" action="/eliminar_ejercicio" style="display:inline;">
+                                <input type="hidden" name="id" value="{{ e[0] }}">
+                                <button style="background:#ff4444; padding:5px 8px; border:none; border-radius:6px; cursor:pointer;">
+                                     🗑️
+                                </button>
+                            </form>
+
+                        </td>
                     </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="5" style="padding:8px; border:1px solid #333; color:#666;"> 
+                    <td colspan="6" style="padding:8px; border:1px solid #333; color:#666;"> 
                         No hay ejercicios para este día.
                     </td>
                 </tr>
