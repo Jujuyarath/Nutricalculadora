@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect, current_app
+from flask import Blueprint, render_template, request, session, redirect
 
 panel_bp = Blueprint("panel", __name__)
 
@@ -7,10 +7,16 @@ def panel():
     if "user_id" not in session:
         return redirect("/")
     
-    conn = current_app.conn
+    from app.db import get_conn
+    conn = get_conn()
     cur = conn.cursor()
-    cur.execute("SELECT nombre, rol FROM usuarios WHERE id = %s", (session["user_id"],))
-    data = cur.fetchone()
+
+    try:
+        cur.execute("SELECT nombre, rol FROM usuarios WHERE id = %s", (session["user_id"],))
+        data = cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
 
     if not data:
         return "Usuario no encontrado"
