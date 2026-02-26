@@ -153,7 +153,16 @@ def editar_rutina(rutina_id):
         """, (rutina_id,))
 
         ejercicios = cur.fetchall()
-        return render_template("coach/editar_rutina.html", ejercicios=ejercicios, rutina_id=rutina_id)
+
+        # Agrupar ejercicios por día
+        dias_dict = {}
+        for e in ejercicios:
+            dia = e[1]
+            if dia not in dias_dict:
+                dias_dict[dia] = []
+            dias_dict[dia].append(e)
+            
+        return render_template("coach/editar_rutina.html", dias_dict=dias_dict)
     
     except Exception as e:
         conn.rollback()
