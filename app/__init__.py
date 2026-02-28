@@ -15,7 +15,12 @@ def create_app():
     app.secret_key = "1.3.6.4.2.3.45.2.34.523.5423.65_fsd.jyr.nsf.5425.dfg.43.df.sky.ky.gnf.543.dsfghsf."
 
     #  CONFIGURACIÓN DE BASE DE DATOS
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") or "postgresql://tu_usuario:tu_pass@localhost/tu_db"
+    database_url = os.getenv("DATABASE_URL")
+
+    if database_url and database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+        
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "postgresql://tu_usuario:tu_pass@localhost/tu_db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Inicializar DB y migraciones
