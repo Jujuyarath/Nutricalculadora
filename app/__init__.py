@@ -26,6 +26,7 @@ def create_app():
     # Inicializar DB y migraciones
     db.init_app(app)
     migrate.init_app(app, db)
+    from . import models
     
     # Registrar blueprints
     from .routes.panel import panel_bp
