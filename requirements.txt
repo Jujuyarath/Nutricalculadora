@@ -11,3 +11,5 @@ gunicorn
 python-dotenv
 pytz
 email-validator
+Flask-SQLAlchemy
+Flask-Migrate
