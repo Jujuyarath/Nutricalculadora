@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora de Grasa Corporal (Navy)</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        .resultado { margin-top: 20px; padding: 10px; background: #ffffff; border-radius: 5px; }
+
+        /* COLORES */
+        .verde { color: #0a8a0a; font-weight: bold; }
+        .amarillo { color: #c7a600; font-weight: bold; }
+        .rojo { color: #c40000; font-weight: bold; }
+
+    /* Botón hamburguesa */
+    #menu-btn {
+        font-size: 26px;
+        cursor: pointer;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1000;
+    }
+
+    /* Menú lateral */
+    #menu-lateral {
+        height: 100%;
+        width: 250px; /* ancho real del menú */
+        position: fixed;
+        top: 0;
+        left: -250px; /* oculto fuera de pantalla */
+        background: transparent; /* transparente cuando está cerrado */
+        overflow-x: hidden;
+        transition: 0.3s;
+        padding: 20px;
+        color: white;
+        z-index: 999;
+    }
+
+    #menu-lateral.abierto {
+        background: #111; 
+    }
+
+    #menu-lateral a {
+        display: block;
+        color: white;
+        padding: 10px 0;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    #menu-lateral a:hover {
+        color: #00c3ff;
+    }
+
+
+    #menu-btn.derecha {
+        left: 260px; /*Hace que se mueva a la derecha cuando se abra*/
+    }
+
+    /* ANIMACIÓN SUAVE PARA LAS IMÁGENES */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.97); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    </style>
+</head>
+<body>
+
+<!-- BOTÓN Y MENÚ LATERAL -->
+<div id="menu-btn" onclick="abrirMenu()">☰</div>
+
+<div id="menu-lateral">
+    <h2 style="margin-top:0;">Arath Labs</h2>
+    <a href="/">Inicio</a>
+    <a href="#" onclick="mostrarLogin()">Ingresar</a>
+    <a href="#">Panel</a>
+    <a href="#">Configuración</a>
+
+    <p style="margin-top:30px; font-size:13px; color:#aaa;">
+        ⚠️ Esta sección está en mantenimiento
+    </p>
+</div>
+
+<div id="contenido-principal">
+
+<h1 style="text-align:center; font-weight:700; letter-spacing:1px;">
+    Método Navy
+</h1>
+<p style="text-align:center; margin-top:-10px; color:#555;">
+    por Arath Calderón
+</p>
+
+<div id="ayuda-medicion" style="text-align:center; margin-bottom:20px;">
+    <!--Aqui aparecera la imagen y el texto-->
+</div>
+
+<form method="POST">
+    <div>
+        <label>Sexo:</label>
+        <select name="sexo" required>
+            <option value="M">Hombre</option>
+            <option value="F">Mujer</option>
+        </select>
+    </div><br>
+
+    <div>
+        <label>Peso (kg):</label>
+        <input type="number" name="peso" step="0.01" required>
+    </div><br>
+
+    <div>
+        <label>Altura (cm):</label>
+        <input type="number" name="altura" step="0.01" required>
+    </div><br>
+
+    <div>
+        <label>Cuello (cm):</label>
+        <input type="number" name="cuello" step="0.01" required onfocus="mostrarAyuda('cuello')">
+    </div><br>
+
+    <div>
+        <label>Abdomen (cm):</label>
+        <input type="number" name="abdomen" step="0.01" onfocus="mostrarAyuda('abdomen')">
+    </div><br>
+
+    <div>
+        <label>Cintura (cm):</label>
+        <input type="number" name="cintura" step="0.01" onfocus="mostrarAyuda('cintura')">
+    </div><br>
+
+    <div>
+        <label>Cadera (cm):</label>
+        <input type="number" name="cadera" step="0.01" onfocus="mostrarAyuda('cadera')">
+    </div><br>
+
+    <p style="font-size:14px; color:#555; margin-bottom:5px;">
+        Llena estos campos solo si deseas recibir tus resultados por correo:
+    </p>
+
+    <div>
+        <label>Nombre completo:</label>
+        <input type="text" name="nombre">
+    </div><br>
+
+    <div>
+        <label>Correo para enviar resultados:</label>
+        <input type="email" name="correo">
+    </div><br>
+
+    <div>
+        <label>
+            <input type="checkbox" name="enviar_entrenador">
+            Enviar copia al entrenador
+        </label>
+    </div><br>
+
+    <button type="submit">Calcular</button>
+</form>
+
+{% if resultado %}
+<div class="resultado">
+
+    <!-- GRASA CORPORAL -->
+    <p><strong>Grasa corporal:</strong> {{ resultado.grasa }}%
+    <br><small>Porcentaje de tu peso total que corresponde a grasa. Es una medida clave de composición corporal.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if sexo == "M" %}
+            {% if resultado.grasa < 14 %}
+            <span class="amarillo">14% – 24% (bajo)</span>
+        {% elif resultado.grasa <= 24 %}
+            <span class="verde">14% – 24% (saludable)</span>
+        {% else %}
+            <span class="rojo">14% – 24% (alto)</span>
+        {% endif %}
+    {% else %}
+        {% if resultado.grasa < 21 %}
+            <span class="amarillo">21% – 31% (bajo)</span>
+        {% elif resultado.grasa <= 31 %}
+            <span class="verde">21% – 31% (saludable)</span>
+        {% else %}
+            <span class="rojo">21% – 31% (alto)</span>
+        {% endif %}
+     {% endif %}
+    </small></p>
+
+     <!-- MASA GRASA -->
+    <p><strong>Masa grasa:</strong> {{ resultado.masa_grasa }} kg
+    <br><small>Cantidad de grasa en tu cuerpo expresada en kilos. Ayuda a ver cambios reales más allá del peso.</small>
+
+    <!-- FFM -->
+    <p><strong>Masa libre de grasa (FFM):</strong> {{ resultado.ffm }} kg
+    <br><small>Todo lo que no es grasa: músculo, hueso, órganos y agua. Es la base para estimar masa muscular.</small>
+
+    <!-- MASA MUSCULAR -->
+    <p><strong>Masa muscular:</strong> {{ resultado.masa_muscular }} kg
+    <br><small>Estimación de la cantidad de músculo en tu cuerpo. Útil para evaluar progreso en fuerza y estética.</small>
+
+    <!-- PORCENTAJE MUSCULAR -->
+    <p><strong>Porcentaje muscular:</strong> {{ resultado.porcentaje_muscular }}%
+    <br><small>Proporción de tu peso total que corresponde a músculo. Complementa al porcentaje de grasa.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if sexo == "M" %}
+            {% if resultado.porcentaje_muscular < 40 %}
+                <span class="rojo">40% – 50% (bajo)</span>
+            {% elif resultado.porcentaje_muscular <= 50 %}
+                <span class="verde">40% – 50% (saludable)</span>
+            {% else %}
+                <span class="amarillo">40% – 50% (muy alto)</span>
+            {% endif %}
+        {% else %}
+            {% if resultado.porcentaje_muscular < 35 %}
+                <span class="rojo">35% – 45% (bajo)</span>
+            {% elif resultado.porcentaje_muscular <= 45 %}
+                <span class="verde">35% – 45% (saludable)</span>
+            {% else %}
+                <span class="amarillo">35% – 45% (muy alto)</span>
+            {% endif %}
+        {% endif %}
+        </small></p>
+
+    <!-- IMC -->
+    <p><strong>IMC:</strong> {{ resultado.imc }}
+    <br><small>Relación entre tu peso y tu altura. No mide grasa, pero sirve como referencia general.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if resultado.imc < 18.5 %}
+            <span class="amarillo">18.5 – 24.9 (bajo)</span>
+        {% elif resultado.imc <= 24.9 %}
+            <span class="verde">18.5 – 24.9 (saludable)</span>
+        {% else %}
+            <span class="rojo">18.5 – 24.9 (alto)</span>
+        {% endif %} 
+    </small></p>
+
+    <p><strong>Relación cintura‑altura (WHtR):</strong> {{ resultado.whtr }}
+    <br><small>Indicador de riesgo metabólico. Valores altos sugieren acumulación de grasa abdominal.</small>
+    <br><small><strong>Rango saludable:</strong>
+        {% if resultado.whtr < 0.40 %}
+            <span class="amarillo">0.40 – 0.49 (muy bajo)</span>
+        {% elif resultado.whtr <= 0.49 %}
+            <span class="verde">0.40 – 0.49 (saludable)</span>
+        {% elif resultado.whtr <= 0.59 %}
+            <span class="amarillo">0.50 – 0.59 (riesgo moderado)</span>
+        {% else %}
+            <span class="rojo">≥ 0.60 (riesgo alto)</span>
+        {% endif %}
+    </small></p>
+
+</div>
+{% endif %}
+
+<script>
+function mostrarAyuda(campo) {
+    const ayuda = document.getElementById("ayuda-medicion");
+
+    const imagenes = {
+        "cuello": {
+            img: "{{ url_for('static', filename='dcuello.webp') }}",
+            texto: "Mide tu cuello justo debajo de la manzana de adan, sin apretar."
+        },
+        "cintura": {
+            img: "{{ url_for('static', filename='cintura.webp') }}",
+            texto: "Mide tu abdomen a la altura del ombligo."
+        },
+        "cadera": {
+            img: "{{ url_for('static', filename='cadera.webp') }}",
+            texto: "Mide tu cadera en la parte más ancha de los glúteos, con los pies juntos."
+        },
+        "abdomen" : {
+            img: "{{ url_for('static', filename='dumbilical.webp') }}",
+            texto: "Mide tu abdomen a la altura del ombligo."
+        }
+    };
+    if (imagenes[campo]) {
+        ayuda.innerHTML = `
+            <div class="fade-in">
+                <img src="${imagenes[campo].img}" width="200"><br>
+                <small>${imagenes[campo].texto}</small>
+        </div>  
+        `;
+    }
+}
+</script>
+
+<script>
+function actualizarCampos() {
+    const sexo = document.querySelector('select[name="sexo"]').value;
+
+     const campoAbdomen = document.querySelector('input[name="abdomen"]').parentElement;
+     const campoCintura = document.querySelector('input[name="cintura"]').parentElement;
+     const campoCadera = document.querySelector('input[name="cadera"]').parentElement;
+
+     if(sexo === "M") {
+        campoAbdomen.style.display = "block";
+        campoCintura.style.display = "none";
+        campoCadera.style.display = "none";
+
+        document.querySelector('input[name="abdomen"]').required = true;
+        document.querySelector('input[name="cintura"]').required = false;
+        document.querySelector('input[name="cadera"]').required = false;
+
+    } else {
+        campoAbdomen.style.display = "none";
+        campoCintura.style.display = "block";
+        campoCadera.style.display = "block";
+
+        document.querySelector('input[name="abdomen"]').required = false;
+        document.querySelector('input[name="cintura"]').required = true;
+        document.querySelector('input[name="cadera"]').required = true;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", actualizarCampos);
+document.querySelector('select[name="sexo"]').addEventListener("change", actualizarCampos);
+</script>
+
+<script>
+document.querySelector("form").addEventListener("submit", function(event) {
+    const correo = document.querySelector('input[name="correo"]').value.trim();
+
+    if (correo ==="") {
+        const confirmar = confirm(
+            "No se enviaran resultados a ningun correo. ¿Desea continuar?"
+        );
+
+        if (!confirmar) {
+            event.preventDefault(); // Cancelar el envio
+        }
+    }
+});
+</script>
+
+<script>
+function abrirMenu() {
+    const menu = document.getElementById("menu-lateral");
+    const btn = document.getElementById("menu-btn")
+    
+    if (menu.classList.contains("abierto")) {
+        menu.classList.remove("abierto");
+        btn.classList.remove("derecha");
+        menu.style.left = "-250px";
+    } else {
+        menu.classList.add("abierto");
+        btn.classList.add("derecha");
+        menu.style.left = "0px";
+    }
+}
+</script>
+
+<script>
+    function mostrarLogin() {
+        const cont = document.getElementById("contenido-principal");
+
+        cont.innerHTML = `
+            <h1 style="text-align:center; font-weight:700; letter-spacing:1px;">
+                Ingresar
+            </h1>
+            <p style="text-align:center; margin-top:-10px; color:#555;">
+                Accede a tu cuenta de Arath Labs
+            </p>
+
+            <form method="POST" action="/login">
+                <div>
+                    <label>Correo:</label>
+                    <input type="email" name="correo" required>
+                </div><br>
+
+                <div>
+                    <label>Contraseña:</label>
+                    <input type="password" name="password" required>
+                </div><br>
+
+                <button type="submit">Entrar</button>
+            </form>
+        `;
+    }
+</script>
+
+</body>
+</html>

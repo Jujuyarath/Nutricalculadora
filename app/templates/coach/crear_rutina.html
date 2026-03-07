@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Crear Rutina</title>
+<style>
+    body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
+    .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; max-width:450px; margin:auto; }
+    input, textarea { width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #333; background:#0f0f0f; color:white; }
+    button { margin-top:15px; padding:10px; width:100%; background:#00d4ff; border:none; border-radius:8px; font-weight:bold; }
+</style>
+</head>
+
+<body>
+<div class="card">
+    <h2>Crear Rutina</h2>
+
+    <form method="POST">
+        <label>Nombre de la rutina</label>
+        <input type="text" name="nombre" required>
+
+        <label>Objetivo</label>
+        <input type="text" name="objetivo">
+
+        <button type="submit">Crear</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpor" content="width=device-width, initial-scale=1.0">
+    <title>Mi Progreso – Arath Labs</title>
+
+    <style>
+        body { margin:0; background:#0f0f0f; color:#e6e6e6; font-family:Arial; }
+        .navbar { background:#1a1a1a; padding:15px 25px; display:flex; justify-content:space-between; border-bottom:1px solid #333; }
+        .navbar h1 { color:#00d4ff; margin:0; }
+        .logout { background:#ff4d4d; padding:8px 15px; border-radius:6px; color:white; text-decoration:none; }
+        .container { padding:30px; }
+        .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+        .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; }
+        .card h3 { color:#00d4ff; margin-top:0; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>Mi Progreso</h1>
+        <a href="/logout" class="logout">Salir</a>
+    </div>
+
+    <div class="container">
+        <h2>Bienvenido {{ nombre }}</h2>
+        <p>Aquí puedes llevar tu propio progreso de forma sencilla.</p>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Registrar mis medidas</h3>
+                <p>Ingresa tus medidas para ver cómo avanzas.</p>
+            </div>
+
+            <div class="card">
+                <h3>Mi historial</h3>
+                <p>Gráficas fáciles de entender sobre tu evolución.</p>
+            </div>
+
+            <div class="card">
+                <h3>Consejos</h3>
+                <p>Tips simples para mejorar tu salud día a día.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Editar Rutina</title>
+<style>
+     body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
+     
+     .card {
+         background:#1a1a1a; 
+         padding:20px; 
+         border-radius:12px;
+         border:1px solid #333;
+         max-width:600px;
+         margin:auto; 
+         position: relative;
+     }
+     
+     input, textarea { 
+        width:100%; 
+        padding:10px; 
+        margin-top:10px; 
+        border-radius:8px; 
+        border:1px solid #333;
+        background:#0f0f0f;
+        color:white; 
+     }
+     
+     button { 
+        margin-top:15px;
+        padding:10px;
+        width:100%;
+        background:#00d4ff;
+        border:none;
+        border-radius:8px;
+        font-weight:bold; 
+     }
+     
+     .ejercicio { 
+        background:#111;
+        padding:10px;
+        border-radius:8px;
+        margin-top:10px;
+        border:1px solid #333; 
+     }
+
+     /* Caja de sugerencias */
+     .sugerencias {
+        background:#1a1a1a;
+        border:1px solid #333;
+        border-radius:8px;
+        margin-top:5px;
+        display:none;
+        position:absolute;
+        width:100%;
+        z-index:20;
+     }
+     .sugerencias div {
+        padding:10px;
+        cursor:pointer;
+     }
+     .sugerencias div:hover {
+        background:#00d4ff;
+        color:black;
+     }
+
+     /* Restaurar bordes de tabla */
+     td, th {
+          border:1px solid #333 !important;
+          text-align: center;
+          vertical-align: middle;
+          padding: 8px;
+     }
+
+     table {
+          border-collapse: collapse;
+     }
+</style>
+</head>
+
+<body>
+<div class="card">
+    <h2>Agregar ejercicios</h2>
+
+    <form method="POST">
+        
+        <label>Día</label>
+        <select name="dia">
+            <option value="Lunes">Lunes</option>
+            <option value="Martes">Martes</option>
+            <option value="Miércoles">Miércoles</option>
+            <option value="Jueves">Jueves</option>
+            <option value="Viernes">Viernes</option>
+            <option value="Sábado">Sábado</option>
+            <option value="Domingo">Domingo</option>
+        </select>
+
+        <label>Nombre del ejercicio</label>
+        <input type="text" id="nombre" name="nombre" autocomplete="off" required>
+
+        <!-- Caja de sugerencias -->
+         <div id="sugerencias" class="sugerencias"></div>
+
+        <label>Series</label>
+        <input type="number" name="series">
+
+        <label>Repeticiones</label>
+        <input type="text" name="repeticiones">
+
+        <label>Peso sugerido</label>
+        <input type="text" name="peso">
+
+        <label>Notas</label>
+        <textarea name="notas"></textarea>
+
+        <button type="submit">Agregar ejercicio</button>
+    </form>
+
+    <h3>Ejercicios agregados</h3>
+
+    {% set dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] %}
+
+    {% for d in dias %}
+       <h2 style="margin-top:25px; color:#00d4ff;">{{ d }}</h2>
+
+       {% set ejercicios_dia = dias_dict.get(d, []) %}
+
+        <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+            <tr style="background:#222;">
+                <th style="padding:8px; border:1px solid #333;">Ejercicio</th>
+                <th style="padding:8px; border:1px solid #333;">Series</th>
+                <th style="padding:8px; border:1px solid #333;">Reps</th>
+                <th style="padding:8px; border:1px solid #333;">Peso</th>
+                <th style="padding:8px; border:1px solid #333;">Notas</th>
+                <th style="padding:8px; border:1px solid #333;">Acciones</th>
+            </tr>
+
+           
+
+            {% if ejercicios_dia %}
+                {% for e in ejercicios_dia %}
+                    <tr>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="nombre">{{ e[2] }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="series">{{ e[3] }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="repeticiones">{{ e[4] }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="peso_sugerido">{{ e[5] if e[5] else "—" }}</td>
+                        <td class="editable" data-id="{{ e[0] }}" data-campo="notas">{{ e[6] if e[6] else "—" }}</td>
+
+                        <td style="padding:8px; border:1px solid #333; text-align:center;">
+
+                            <!-- Botón eliminar -->
+                            <form method="POST" action="/eliminar_ejercicio" style="display:inline;">
+                                <input type="hidden" name="id" value="{{ e[0] }}">
+                                <button style="background:#331111; padding:4px 8px; border:none; border-radius:6px; cursor:pointer; color:#ff6666; font-size:12px;">
+                                     Borrar
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="padding:8px; border:1px solid #333; color:#666;"> 
+                        No hay ejercicios para este día.
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    {% endfor %}
+
+<script>
+const nombreInput = document.getElementById("nombre");
+const box = document.getElementById("sugerencias");
+let debounceTimer;
+
+nombreInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(buscarEjercicios, 250);
+});
+
+async function buscarEjercicios() {
+     const q = nombreInput.value.trim();
+     
+    if (q.length < 2) {
+        box.style.display = "none";
+        return;
+    }
+
+    const res = await fetch(`/buscar_ejercicios?q=${q}`);
+    const data = await res.json();
+
+    box.innerHTML = "";
+
+    if (data.resultados.length === 0) {
+        box.style.display = "none";
+        return;
+    }
+
+    data.resultados.forEach(ej => {
+        const div = document.createElement("div");
+        div.textContent = ej;
+        div.onclick = () => {
+            nombreInput.value = ej;
+            box.style.display = "none";
+        };
+        box.appendChild(div);
+    });
+
+    box.style.display = "block";
+}
+     
+nombreInput.addEventListener("blur", () => {
+     setTimeout(() => {
+          if (!box.matches(":hover")) {
+               box.style.display = "none";
+          }
+     }, 150);
+});
+</script>
+
+<script>
+document.querySelectorAll(".editable").forEach(cell => {
+     cell.addEventListener("click", () => {
+          if (cell.querySelector("input")) return;
+
+          const valorActual = cell.textContent.trim();
+          const input = document.createElement("input");
+          input.value = valorActual;
+          input.style.width = "90%";
+          input.style.background = "#0f0f0f";
+          input.style.color = "white";
+          input.style.border = "1px solid #333";
+          input.style.borderRadius = "6px";
+          input.style.padding = "4px";
+
+          cell.textContent = "";
+          cell.appendChild(input);
+          input.focus();
+
+          input.addEventListener("blur", async () => {
+               const nuevoValor = input.value.trim();
+               const id = cell.dataset.id;
+               const campo = cell.dataset.campo;
+
+               cell.textContent = nuevoValor;
+
+               await fetch("/actualizar_ejercicio", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                         id: id,
+                         campo: campo,
+                         valor: nuevoValor
+                    })
+               });
+          });
+     });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+flask
+werkzeug
+jinja2
+itsdangerous
+blinker
+psycopg
+bcrypt
+requests
+sib_api_v3_sdk
+gunicorn
+python-dotenv
+pytz
+email-validator
+Flask-SQLAlchemy
+Flask-Migrate
+PyJWT==2.11.0

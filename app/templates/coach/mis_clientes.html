@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Clientes – Coach (Arath Labs)</title>
+
+    <style>
+        :root {
+             --bg: #0f0f0f;
+             --panel: #1a1a1a;
+             --border: #2a2a2a;
+             --text: #e6e6e6;
+             --accent: #00d4ff;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        h1 {
+            color: var(--accent);
+        }
+
+        .cliente-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .cliente-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .acciones a {
+            margin-left: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            background: var(--accent);
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Mis Clientes</h1>
+
+        {% for c in clientes %}
+        <div class="cliente-card">
+
+            </div>
+                 <h3>{{ c[1] }}</h3>
+                 <p>Última grasa: <strong>{{ c[2] }}%</strong></p>
+                 <p>Última actualización: {{ c[3] }}</p>
+            </div>
+
+            <div class="acciones">
+                <a href="/progreso/{{ c[0] }}">Progreso</a>
+                <a href="/asignar_rutina/{{ c[0] }}">Rutina</a>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
+      
