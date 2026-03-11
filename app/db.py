@@ -1,11 +1,14 @@
 # app/db.py
 import psycopg
+import os
 
 def get_conn():
-    return psycopg.connect(
-        host="dpg-d65t1c0gjchc73fh6i30-a.oregon-postgres.render.com",
-        dbname="arathlabs_db",
-        user="arathlabs_db_user",
-        password="EVXGekJcJvVGGOnOUiGcOeTiBhUWEWKx",
-        port="5432"
-    )
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise ValueError("DATABASE_URL no está configurada")
+    
+    # psycopg expects postgresql:// but some platforms like Heroku/Render provide postgres://
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    return psycopg.connect(database_url)

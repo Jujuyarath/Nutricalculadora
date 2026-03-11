@@ -12,7 +12,8 @@ def create_app():
         template_folder="templates",
         static_folder="static"
     )
-    app.secret_key = "1.3.6.4.2.3.45.2.34.523.5423.65_fsd.jyr.nsf.5425.dfg.43.df.sky.ky.gnf.543.dsfghsf."
+    
+    app.secret_key = os.environ.get("SECRET_KEY", "dev-key-fallback")
 
     #  CONFIGURACIÓN DE BASE DE DATOS
     database_url = os.getenv("DATABASE_URL")

@@ -69,6 +69,9 @@ def mis_clientes():
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        cur.close()
+        conn.close()
 
 # CREAR RUTINA
 @coach_bp.route("/crear_rutina", methods=["GET", "POST"])
@@ -100,7 +103,12 @@ def crear_rutina():
         except Exception as e:
             conn.rollback()
             raise e
+        finally:
+            cur.close()
+            conn.close()
 
+    cur.close()
+    conn.close()
     return render_template("coach/crear_rutina.html")
 
 # EDITAR RUTINA
@@ -131,6 +139,8 @@ def editar_rutina(rutina_id):
 
         except Exception as e:
             conn.rollback()
+            cur.close()
+            conn.close()
             raise e
 
     # OBTENER EJERCICIOS EXISTENTES
@@ -167,6 +177,9 @@ def editar_rutina(rutina_id):
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        cur.close()
+        conn.close()
 
 # ASIGNAR RUTINA A UN CLIENTE
 @coach_bp.route("/asignar_rutina/<int:cliente_id>", methods=["GET", "POST"])
@@ -186,6 +199,8 @@ def asignar_rutina(cliente_id):
             """, (session["user_id"], cliente_id))
 
             if cur.fetchone() is None:
+                cur.close()
+                conn.close()
                 return "No tienes permiso para ver este cliente"
   
         if request.method == "POST":
@@ -197,6 +212,8 @@ def asignar_rutina(cliente_id):
             """, (rutina_id, cliente_id))
 
             conn.commit()
+            cur.close()
+            conn.close()
             return redirect(f"/cliente/{cliente_id}")
 
         cur.execute("""
@@ -210,6 +227,11 @@ def asignar_rutina(cliente_id):
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        if not cur.closed:
+            cur.close()
+        if not conn.closed:
+            conn.close()
     
 @coach_bp.route("/progreso/<int:cliente_id>")
 def progreso(cliente_id):
@@ -228,6 +250,8 @@ def progreso(cliente_id):
             """, (session["user_id"], cliente_id))
 
             if cur.fetchone() is None:
+                cur.close()
+                conn.close()
                 return "No tienes permiso para ver este progreso"
     
         # Obtener nombre del cliente
@@ -264,6 +288,11 @@ def progreso(cliente_id):
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        if not cur.closed:
+            cur.close()
+        if not conn.closed:
+            conn.close()
 
 # Autocompletar ejercicios
 @coach_bp.route("/buscar_ejercicios")
@@ -287,6 +316,9 @@ def buscar_ejercicios():
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        cur.close()
+        conn.close()
 
 @coach_bp.route("/eliminar_ejercicio", methods=["POST"])
 def eliminar_ejercicio():
@@ -313,6 +345,9 @@ def eliminar_ejercicio():
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        cur.close()
+        conn.close()
 
 @coach_bp.route("/editar_ejercicio/<int:ejercicio_id>", methods=["GET", "POST"])
 def editar_ejercicio(ejercicio_id):
@@ -349,17 +384,24 @@ def editar_ejercicio(ejercicio_id):
         except Exception as e:
             conn.rollback()
             raise e
+        finally:
+            cur.close()
+            conn.close()
 
-    # Obtener datos del ejercicio para mostrar en el formulario
-    cur.execute("""
-        SELECT rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas
-        FROM ejercicios
-        WHERE id=%s
-    """, (ejercicio_id,))
+    try:
+        # Obtener datos del ejercicio para mostrar en el formulario
+        cur.execute("""
+            SELECT rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas
+            FROM ejercicios
+            WHERE id=%s
+        """, (ejercicio_id,))
 
-    ejercicio = cur.fetchone()
+        ejercicio = cur.fetchone()
 
-    return render_template("coach/editar_ejercicio.html", ejercicio=ejercicio)
+        return render_template("coach/editar_ejercicio.html", ejercicio=ejercicio)
+    finally:
+        cur.close()
+        conn.close()
 
 @coach_bp.route("/actualizar_ejercicio", methods=["POST"])
 def actualizar_ejercicio():
@@ -388,3 +430,6 @@ def actualizar_ejercicio():
     except Exception as e:
         conn.rollback()
         return {"status": "error", "msg": str(e)}, 500
+    finally:
+        cur.close()
+        conn.close()
