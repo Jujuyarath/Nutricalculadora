@@ -458,6 +458,35 @@ def mis_rutinas():
         cur.close()
         conn.close()
 
+@coach_bp.route("/eliminar_rutina/<int:rutina_id>", methods=["POST"])
+def eliminar_rutina(rutina_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    from app.db import get_conn
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        # 1. Borrar ejercicios de esa rutina
+        cur.execute("DELETE FROM ejercicios WHERE rutina_id = %s", (rutina_id,))
+        
+        # 2. Borrar asignaciones en rutinas_asignadas
+        cur.execute("DELETE FROM rutinas_asignadas WHERE rutina_id = %s", (rutina_id,))
+        
+        # 3. Borrar la rutina
+        cur.execute("DELETE FROM rutinas WHERE id = %s", (rutina_id,))
+        
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
+    
+    return redirect("/mis_rutinas")
+
 # REGISTRO DE USUARIOS POR EL COACH
 @coach_bp.route("/registro_usuario", methods=["GET", "POST"])
 def registro_usuario():

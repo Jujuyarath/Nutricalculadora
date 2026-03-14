@@ -1,5 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 import bcrypt
+import os
+from werkzeug.utils import secure_filename
 from app.utils.grasa import calcular_medidas
 from app.db import get_conn
 
@@ -99,14 +101,22 @@ def registrar_medidas_api():
 
         try:
             cur.execute("""
-                INSERT INTO historial (usuario_id, grasa, masa_muscular, imc, whtr)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO historial (usuario_id, grasa, masa_muscular, imc, whtr, brazo, pierna, peso, altura, cuello, abdomen, cintura, cadera)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 data["usuario_id"],
                 resultado["grasa"],
                 resultado["masa_muscular"],
                 resultado["imc"],
-                resultado["whtr"]
+                resultado["whtr"],
+                data.get("brazo"),
+                data.get("pierna"),
+                peso,
+                altura,
+                cuello,
+                data.get("abdomen"),
+                data.get("cintura"),
+                data.get("cadera")
             ))
 
             conn.commit()
@@ -251,5 +261,92 @@ def asignar_rutina_api():
         finally:
             cur.close()
             conn.close()
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# 8) ACTUALIZAR PERFIL
+@api_bp.route("/actualizar_perfil", methods=["POST"])
+def actualizar_perfil():
+    try:
+        data = request.json
+        usuario_id = data["usuario_id"]
+        
+        updates = []
+        params = []
+        
+        fields = ["nombre", "correo", "sexo", "edad", "peso", "altura", "telefono"]
+        for field in fields:
+            if field in data:
+                updates.append(f"{field} = %s")
+                params.append(data[field])
+        
+        if "password" in data and data["password"]:
+            hashed_password = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            updates.append("contraseña = %s")
+            params.append(hashed_password)
+            
+        if not updates:
+            return jsonify({"status": "error", "message": "No hay campos para actualizar"}), 400
+            
+        params.append(usuario_id)
+        query = f"UPDATE usuarios SET {', '.join(updates)} WHERE id = %s"
+        
+        conn = get_conn()
+        cur = conn.cursor()
+        try:
+            cur.execute(query, tuple(params))
+            conn.commit()
+            return jsonify({"status": "ok", "mensaje": "Perfil actualizado exitosamente"})
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cur.close()
+            conn.close()
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# 9) SUBIR FOTO DE PERFIL
+@api_bp.route("/subir_foto", methods=["POST"])
+def subir_foto():
+    try:
+        if 'foto' not in request.files:
+            return jsonify({"status": "error", "message": "No se envió ninguna foto"}), 400
+            
+        file = request.files['foto']
+        usuario_id = request.form.get('usuario_id')
+        
+        if not usuario_id:
+            return jsonify({"status": "error", "message": "Falta usuario_id"}), 400
+            
+        if file.filename == '':
+            return jsonify({"status": "error", "message": "Nombre de archivo vacío"}), 400
+            
+        if file:
+            filename = secure_filename(f"perfil_{usuario_id}_{file.filename}")
+            upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'perfiles')
+            
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+                
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+            
+            # Guardar la ruta en la DB
+            foto_url = f"/static/uploads/perfiles/{filename}"
+            
+            conn = get_conn()
+            cur = conn.cursor()
+            try:
+                cur.execute("UPDATE usuarios SET foto_url = %s WHERE id = %s", (foto_url, usuario_id))
+                conn.commit()
+                return jsonify({"status": "ok", "foto_url": foto_url})
+            except Exception as e:
+                conn.rollback()
+                return jsonify({"status": "error", "message": f"Foto subida pero error en DB: {e}"}), 500
+            finally:
+                cur.close()
+                conn.close()
+                
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
