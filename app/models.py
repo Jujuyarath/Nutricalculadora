@@ -23,11 +23,17 @@ class Usuarios(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.Text, nullable=False)
-    correo = db.Column(db.Text, nullable=False)
+    correo = db.Column(db.Text, nullable=False, unique=True)
     contraseña = db.Column(db.Text, nullable=False)
     fecha_registro = db.Column(db.DateTime, server_default=db.func.now())
-    rol = db.Column(db.Text, server_default='cliente_il')
+    rol = db.Column(db.Text, server_default='cliente')
     llave_acceso = db.Column(db.Text)
+    creado_por_entrenador = db.Column(db.Boolean, default=False)
+    sexo = db.Column(db.String(10))
+    edad = db.Column(db.Integer)
+    peso = db.Column(db.Numeric)
+    altura = db.Column(db.Numeric)
+    telefono = db.Column(db.String(20))
 
 class Progreso(db.Model):
     __tablename__ = "progreso"

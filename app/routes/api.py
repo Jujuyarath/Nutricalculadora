@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+import bcrypt
 from app.utils.grasa import calcular_medidas
 from app.db import get_conn
 
@@ -19,6 +20,9 @@ def obtener_rutina(usuario_id, dia):
         """, (usuario_id, dia))
 
         ejercicios = cur.fetchall()
+
+        if not ejercicios:
+            return jsonify({"mensaje": "No hay rutina asignada para este día"}), 200
 
         data = [
             {
@@ -177,3 +181,75 @@ def obtener_historial(usuario_id):
     finally:
         cur.close()
         conn.close()
+
+# 6) REGISTRO DE USUARIOS (APP)
+@api_bp.route("/registro", methods=["POST"])
+def registro_api():
+    try:
+        data = request.json
+        nombre = data["nombre"]
+        correo = data["correo"]
+        password = data["password"]
+        sexo = data.get("sexo")
+        edad = data.get("edad")
+        peso = data.get("peso")
+        altura = data.get("altura")
+        telefono = data.get("telefono")
+
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+        conn = get_conn()
+        cur = conn.cursor()
+
+        try:
+            cur.execute("""
+                INSERT INTO usuarios (nombre, correo, contraseña, rol, creado_por_entrenador, sexo, edad, peso, altura, telefono)
+                VALUES (%s, %s, %s, 'cliente', false, %s, %s, %s, %s, %s)
+                RETURNING id
+            """, (nombre, correo, hashed_password, sexo, edad, peso, altura, telefono))
+            
+            usuario_id = cur.fetchone()[0]
+            conn.commit()
+
+            return jsonify({"status": "ok", "usuario_id": usuario_id, "mensaje": "Usuario registrado exitosamente"})
+        except Exception as e:
+            conn.rollback()
+            if "unique constraint" in str(e).lower():
+                return jsonify({"status": "error", "message": "El correo ya está registrado"}), 400
+            raise e
+        finally:
+            cur.close()
+            conn.close()
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# 7) ASIGNAR RUTINA
+@api_bp.route("/asignar_rutina", methods=["POST"])
+def asignar_rutina_api():
+    try:
+        data = request.json
+        usuario_id = data["usuario_id"]
+        rutina_id = data["rutina_id"]
+
+        conn = get_conn()
+        cur = conn.cursor()
+
+        try:
+            # Primero borrar si ya existe una asignación para ese usuario (opcional)
+            cur.execute("DELETE FROM rutinas_asignadas WHERE cliente_id = %s", (usuario_id,))
+            
+            cur.execute("""
+                INSERT INTO rutinas_asignadas (cliente_id, rutina_id)
+                VALUES (%s, %s)
+            """, (usuario_id, rutina_id))
+
+            conn.commit()
+            return jsonify({"status": "ok", "mensaje": "Rutina asignada exitosamente"})
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cur.close()
+            conn.close()
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500

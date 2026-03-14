@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, session, redirect, request
+from flask import Blueprint, render_template, session, redirect, request, jsonify
+import bcrypt
 
 coach_bp = Blueprint("coach", __name__)
 
@@ -430,6 +431,107 @@ def actualizar_ejercicio():
     except Exception as e:
         conn.rollback()
         return {"status": "error", "msg": str(e)}, 500
+    finally:
+        cur.close()
+        conn.close()
+
+# LISTADO DE RUTINAS
+@coach_bp.route("/mis_rutinas")
+def mis_rutinas():
+    if "user_id" not in session:
+        return redirect("/")
+    
+    from app.db import get_conn
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT id, nombre, objetivo, fecha_creacion
+            FROM rutinas
+            WHERE profesional_id = %s
+            ORDER BY fecha_creacion DESC
+        """, (session["user_id"],))
+        rutinas = cur.fetchall()
+        return render_template("coach/mis_rutinas.html", rutinas=rutinas)
+    finally:
+        cur.close()
+        conn.close()
+
+# REGISTRO DE USUARIOS POR EL COACH
+@coach_bp.route("/registro_usuario", methods=["GET", "POST"])
+def registro_usuario():
+    if "user_id" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        correo = request.form["correo"]
+        password = request.form["password"]
+        sexo = request.form["sexo"]
+        edad = request.form["edad"]
+        peso = request.form["peso"]
+        altura = request.form["altura"]
+        telefono = request.form["telefono"]
+
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+        from app.db import get_conn
+        conn = get_conn()
+        cur = conn.cursor()
+
+        try:
+            cur.execute("""
+                INSERT INTO usuarios (nombre, correo, contraseña, rol, creado_por_entrenador, sexo, edad, peso, altura, telefono)
+                VALUES (%s, %s, %s, 'cliente', true, %s, %s, %s, %s, %s)
+                RETURNING id
+            """, (nombre, correo, hashed_password, sexo, edad, peso, altura, telefono))
+            
+            nuevo_usuario_id = cur.fetchone()[0]
+
+            # Asignar automáticamente al coach que lo creó
+            cur.execute("""
+                INSERT INTO asignaciones (profesional_id, cliente_id)
+                VALUES (%s, %s)
+            """, (session["user_id"], nuevo_usuario_id))
+
+            conn.commit()
+            return redirect("/mis_clientes")
+        except Exception as e:
+            conn.rollback()
+            return f"Error: {e}"
+        finally:
+            cur.close()
+            conn.close()
+
+    return render_template("coach/registro_usuario.html")
+
+# VER USUARIOS CON RUTINA ASIGNADA
+@coach_bp.route("/usuarios_asignados")
+def usuarios_asignados():
+    if "user_id" not in session:
+        return redirect("/")
+
+    from app.db import get_conn
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        # Consulta para ver qué usuarios tienen qué rutina asignada
+        cur.execute("""
+            SELECT 
+                u.nombre AS usuario,
+                r.nombre AS rutina,
+                u.id AS usuario_id,
+                r.id AS rutina_id
+            FROM rutinas_asignadas ra
+            JOIN usuarios u ON u.id = ra.cliente_id
+            JOIN rutinas r ON r.id = ra.rutina_id
+            WHERE r.profesional_id = %s
+        """, (session["user_id"],))
+        
+        asignaciones = cur.fetchall()
+        return render_template("coach/usuarios_asignados.html", asignaciones=asignaciones)
     finally:
         cur.close()
         conn.close()

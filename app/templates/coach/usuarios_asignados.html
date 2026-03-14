@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios Asignados – Arath Labs</title>
+    <style>
+        body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
+        .card { background:#1a1a1a; padding:20px; border-radius:12px; border:1px solid #333; margin:auto; }
+        table { width:100%; border-collapse:collapse; margin-top:20px; }
+        th, td { padding:12px; border:1px solid #333; text-align:left; }
+        th { background:#222; color:#00d4ff; }
+        .btn { padding:6px 12px; border-radius:6px; text-decoration:none; font-size:14px; font-weight:bold; }
+        .btn-edit { background:#00d4ff; color:black; }
+        .btn-delete { background:#331111; color:#ff6666; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Usuarios con Rutina Asignada</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rutina Asignada</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in asignaciones %}
+                <tr>
+                    <td>{{ a[0] }}</td>
+                    <td>{{ a[1] }}</td>
+                    <td>
+                        <a href="/asignar_rutina/{{ a[2] }}" class="btn btn-edit">Reasignar</a>
+                        <!-- Aquí se podría agregar un botón de eliminar asignación si se desea -->
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align:center; color:#666;">No hay asignaciones registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/panel" style="display:block; margin-top:20px; color:#888; text-decoration:none;">← Volver al Panel</a>
+    </div>
+</body>
+</html>

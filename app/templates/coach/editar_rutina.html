@@ -1,129 +1,144 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<title>Editar Rutina</title>
-<style>
-     body { background:#0f0f0f; color:#e6e6e6; font-family:Arial; padding:30px; }
-     
-     .card {
-         background:#1a1a1a; 
-         padding:20px; 
-         border-radius:12px;
-         border:1px solid #333;
-         max-width:600px;
-         margin:auto; 
-         position: relative;
-     }
-     
-     input, textarea { 
-        width:100%; 
-        padding:10px; 
-        margin-top:10px; 
-        border-radius:8px; 
-        border:1px solid #333;
-        background:#0f0f0f;
-        color:white; 
-     }
-     
-     button { 
-        margin-top:15px;
-        padding:10px;
-        width:100%;
-        background:#00d4ff;
-        border:none;
-        border-radius:8px;
-        font-weight:bold; 
-     }
-     
-     .ejercicio { 
-        background:#111;
-        padding:10px;
-        border-radius:8px;
-        margin-top:10px;
-        border:1px solid #333; 
-     }
+    <meta charset="UTF-8">
+    <title>Editar Rutina</title>
+    <style>
+        body {
+            background: #0f0f0f;
+            color: #e6e6e6;
+            font-family: Arial;
+            padding: 30px;
+        }
 
-     /* Caja de sugerencias */
-     .sugerencias {
-        background:#1a1a1a;
-        border:1px solid #333;
-        border-radius:8px;
-        margin-top:5px;
-        display:none;
-        position:absolute;
-        width:100%;
-        z-index:20;
-     }
-     .sugerencias div {
-        padding:10px;
-        cursor:pointer;
-     }
-     .sugerencias div:hover {
-        background:#00d4ff;
-        color:black;
-     }
+        .card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            max-width: 600px;
+            margin: auto;
+            position: relative;
+        }
 
-     /* Restaurar bordes de tabla */
-     td, th {
-          border:1px solid #333 !important;
-          text-align: center;
-          vertical-align: middle;
-          padding: 8px;
-     }
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #0f0f0f;
+            color: white;
+        }
 
-     table {
-          border-collapse: collapse;
-     }
-</style>
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background: #00d4ff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .ejercicio {
+            background: #111;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #333;
+        }
+
+        /* Caja de sugerencias */
+        .sugerencias {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-top: 5px;
+            display: none;
+            position: absolute;
+            width: 100%;
+            z-index: 20;
+        }
+
+        .sugerencias div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .sugerencias div:hover {
+            background: #00d4ff;
+            color: black;
+        }
+
+        /* Restaurar bordes de tabla */
+        td,
+        th {
+            border: 1px solid #333 !important;
+            text-align: center;
+            vertical-align: middle;
+            padding: 8px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+    </style>
 </head>
 
 <body>
-<div class="card">
-    <h2>Agregar ejercicios</h2>
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Agregar ejercicios</h2>
+            <a href="/mis_rutinas"
+                style="background: #222; color: #00d4ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; border: 1px solid #00d4ff; font-weight: bold;">Guardar
+                y Salir</a>
+        </div>
 
-    <form method="POST">
-        
-        <label>Día</label>
-        <select name="dia">
-            <option value="Lunes">Lunes</option>
-            <option value="Martes">Martes</option>
-            <option value="Miércoles">Miércoles</option>
-            <option value="Jueves">Jueves</option>
-            <option value="Viernes">Viernes</option>
-            <option value="Sábado">Sábado</option>
-            <option value="Domingo">Domingo</option>
-        </select>
+        <form method="POST">
 
-        <label>Nombre del ejercicio</label>
-        <input type="text" id="nombre" name="nombre" autocomplete="off" required>
+            <label>Día</label>
+            <select name="dia">
+                <option value="Lunes">Lunes</option>
+                <option value="Martes">Martes</option>
+                <option value="Miércoles">Miércoles</option>
+                <option value="Jueves">Jueves</option>
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+                <option value="Domingo">Domingo</option>
+            </select>
 
-        <!-- Caja de sugerencias -->
-         <div id="sugerencias" class="sugerencias"></div>
+            <label>Nombre del ejercicio</label>
+            <input type="text" id="nombre" name="nombre" autocomplete="off" required>
 
-        <label>Series</label>
-        <input type="number" name="series">
+            <!-- Caja de sugerencias -->
+            <div id="sugerencias" class="sugerencias"></div>
 
-        <label>Repeticiones</label>
-        <input type="text" name="repeticiones">
+            <label>Series</label>
+            <input type="number" name="series">
 
-        <label>Peso sugerido</label>
-        <input type="text" name="peso">
+            <label>Repeticiones</label>
+            <input type="text" name="repeticiones">
 
-        <label>Notas</label>
-        <textarea name="notas"></textarea>
+            <label>Peso sugerido</label>
+            <input type="text" name="peso">
 
-        <button type="submit">Agregar ejercicio</button>
-    </form>
+            <label>Notas</label>
+            <textarea name="notas"></textarea>
 
-    <h3>Ejercicios agregados</h3>
+            <button type="submit">Agregar ejercicio</button>
+        </form>
 
-    {% set dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] %}
+        <h3>Ejercicios agregados</h3>
 
-    {% for d in dias %}
-       <h2 style="margin-top:25px; color:#00d4ff;">{{ d }}</h2>
+        {% set dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] %}
 
-       {% set ejercicios_dia = dias_dict.get(d, []) %}
+        {% for d in dias %}
+        <h2 style="margin-top:25px; color:#00d4ff;">{{ d }}</h2>
+
+        {% set ejercicios_dia = dias_dict.get(d, []) %}
 
         <table style="width:100%; border-collapse:collapse; margin-top:10px;">
             <tr style="background:#222;">
@@ -135,128 +150,130 @@
                 <th style="padding:8px; border:1px solid #333;">Acciones</th>
             </tr>
 
-           
+
 
             {% if ejercicios_dia %}
-                {% for e in ejercicios_dia %}
-                    <tr>
-                        <td class="editable" data-id="{{ e[0] }}" data-campo="nombre">{{ e[2] }}</td>
-                        <td class="editable" data-id="{{ e[0] }}" data-campo="series">{{ e[3] }}</td>
-                        <td class="editable" data-id="{{ e[0] }}" data-campo="repeticiones">{{ e[4] }}</td>
-                        <td class="editable" data-id="{{ e[0] }}" data-campo="peso_sugerido">{{ e[5] if e[5] else "—" }}</td>
-                        <td class="editable" data-id="{{ e[0] }}" data-campo="notas">{{ e[6] if e[6] else "—" }}</td>
+            {% for e in ejercicios_dia %}
+            <tr>
+                <td class="editable" data-id="{{ e[0] }}" data-campo="nombre">{{ e[2] }}</td>
+                <td class="editable" data-id="{{ e[0] }}" data-campo="series">{{ e[3] }}</td>
+                <td class="editable" data-id="{{ e[0] }}" data-campo="repeticiones">{{ e[4] }}</td>
+                <td class="editable" data-id="{{ e[0] }}" data-campo="peso_sugerido">{{ e[5] if e[5] else "—" }}</td>
+                <td class="editable" data-id="{{ e[0] }}" data-campo="notas">{{ e[6] if e[6] else "—" }}</td>
 
-                        <td style="padding:8px; border:1px solid #333; text-align:center;">
+                <td style="padding:8px; border:1px solid #333; text-align:center;">
 
-                            <!-- Botón eliminar -->
-                            <form method="POST" action="/eliminar_ejercicio" style="display:inline;">
-                                <input type="hidden" name="id" value="{{ e[0] }}">
-                                <button style="background:#331111; padding:4px 8px; border:none; border-radius:6px; cursor:pointer; color:#ff6666; font-size:12px;">
-                                     Borrar
-                                </button>
-                            </form>
+                    <!-- Botón eliminar -->
+                    <form method="POST" action="/eliminar_ejercicio" style="display:inline;">
+                        <input type="hidden" name="id" value="{{ e[0] }}">
+                        <button
+                            style="background:#331111; padding:4px 8px; border:none; border-radius:6px; cursor:pointer; color:#ff6666; font-size:12px;">
+                            Borrar
+                        </button>
+                    </form>
 
-                        </td>
-                    </tr>
-                {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
             {% else %}
-                <tr>
-                    <td colspan="6" style="padding:8px; border:1px solid #333; color:#666;"> 
-                        No hay ejercicios para este día.
-                    </td>
-                </tr>
+            <tr>
+                <td colspan="6" style="padding:8px; border:1px solid #333; color:#666;">
+                    No hay ejercicios para este día.
+                </td>
+            </tr>
             {% endif %}
         </table>
-    {% endfor %}
+        {% endfor %}
 
-<script>
-const nombreInput = document.getElementById("nombre");
-const box = document.getElementById("sugerencias");
-let debounceTimer;
+        <script>
+            const nombreInput = document.getElementById("nombre");
+            const box = document.getElementById("sugerencias");
+            let debounceTimer;
 
-nombreInput.addEventListener("input", () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(buscarEjercicios, 250);
-});
+            nombreInput.addEventListener("input", () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(buscarEjercicios, 250);
+            });
 
-async function buscarEjercicios() {
-     const q = nombreInput.value.trim();
-     
-    if (q.length < 2) {
-        box.style.display = "none";
-        return;
-    }
+            async function buscarEjercicios() {
+                const q = nombreInput.value.trim();
 
-    const res = await fetch(`/buscar_ejercicios?q=${q}`);
-    const data = await res.json();
+                if (q.length < 2) {
+                    box.style.display = "none";
+                    return;
+                }
 
-    box.innerHTML = "";
+                const res = await fetch(`/buscar_ejercicios?q=${q}`);
+                const data = await res.json();
 
-    if (data.resultados.length === 0) {
-        box.style.display = "none";
-        return;
-    }
+                box.innerHTML = "";
 
-    data.resultados.forEach(ej => {
-        const div = document.createElement("div");
-        div.textContent = ej;
-        div.onclick = () => {
-            nombreInput.value = ej;
-            box.style.display = "none";
-        };
-        box.appendChild(div);
-    });
+                if (data.resultados.length === 0) {
+                    box.style.display = "none";
+                    return;
+                }
 
-    box.style.display = "block";
-}
-     
-nombreInput.addEventListener("blur", () => {
-     setTimeout(() => {
-          if (!box.matches(":hover")) {
-               box.style.display = "none";
-          }
-     }, 150);
-});
-</script>
+                data.resultados.forEach(ej => {
+                    const div = document.createElement("div");
+                    div.textContent = ej;
+                    div.onclick = () => {
+                        nombreInput.value = ej;
+                        box.style.display = "none";
+                    };
+                    box.appendChild(div);
+                });
 
-<script>
-document.querySelectorAll(".editable").forEach(cell => {
-     cell.addEventListener("click", () => {
-          if (cell.querySelector("input")) return;
+                box.style.display = "block";
+            }
 
-          const valorActual = cell.textContent.trim();
-          const input = document.createElement("input");
-          input.value = valorActual;
-          input.style.width = "90%";
-          input.style.background = "#0f0f0f";
-          input.style.color = "white";
-          input.style.border = "1px solid #333";
-          input.style.borderRadius = "6px";
-          input.style.padding = "4px";
+            nombreInput.addEventListener("blur", () => {
+                setTimeout(() => {
+                    if (!box.matches(":hover")) {
+                        box.style.display = "none";
+                    }
+                }, 150);
+            });
+        </script>
 
-          cell.textContent = "";
-          cell.appendChild(input);
-          input.focus();
+        <script>
+            document.querySelectorAll(".editable").forEach(cell => {
+                cell.addEventListener("click", () => {
+                    if (cell.querySelector("input")) return;
 
-          input.addEventListener("blur", async () => {
-               const nuevoValor = input.value.trim();
-               const id = cell.dataset.id;
-               const campo = cell.dataset.campo;
+                    const valorActual = cell.textContent.trim();
+                    const input = document.createElement("input");
+                    input.value = valorActual;
+                    input.style.width = "90%";
+                    input.style.background = "#0f0f0f";
+                    input.style.color = "white";
+                    input.style.border = "1px solid #333";
+                    input.style.borderRadius = "6px";
+                    input.style.padding = "4px";
 
-               cell.textContent = nuevoValor;
+                    cell.textContent = "";
+                    cell.appendChild(input);
+                    input.focus();
 
-               await fetch("/actualizar_ejercicio", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                         id: id,
-                         campo: campo,
-                         valor: nuevoValor
-                    })
-               });
-          });
-     });
-});
-</script>
+                    input.addEventListener("blur", async () => {
+                        const nuevoValor = input.value.trim();
+                        const id = cell.dataset.id;
+                        const campo = cell.dataset.campo;
+
+                        cell.textContent = nuevoValor;
+
+                        await fetch("/actualizar_ejercicio", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: id,
+                                campo: campo,
+                                valor: nuevoValor
+                            })
+                        });
+                    });
+                });
+            });
+        </script>
 </body>
+
 </html>
