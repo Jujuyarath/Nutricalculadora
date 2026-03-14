@@ -4,7 +4,7 @@ from app.db import get_conn
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
-# 1) OBTENER RUTINA DEL DÍA
+# 1) OBTENER RUTINA DEL DÍA (corregido: buscar vía rutinas_asignadas)
 @api_bp.route("/rutina/<int:usuario_id>/<dia>", methods=["GET"])
 def obtener_rutina(usuario_id, dia):
     conn = get_conn()
@@ -12,9 +12,10 @@ def obtener_rutina(usuario_id, dia):
 
     try:
         cur.execute("""
-            SELECT id, nombre, series, repeticiones, peso, notas
-            FROM ejercicios
-            WHERE usuario_id = %s AND dia = %s
+            SELECT e.id, e.nombre, e.series, e.repeticiones, e.peso_sugerido, e.notas
+            FROM ejercicios e
+            JOIN rutinas_asignadas ra ON ra.rutina_id = e.rutina_id
+            WHERE ra.cliente_id = %s AND e.dia = %s
         """, (usuario_id, dia))
 
         ejercicios = cur.fetchall()
@@ -134,6 +135,42 @@ def obtener_progreso(usuario_id, dia):
         row = cur.fetchone()
 
         return jsonify({"dia": dia, "tiempo": row[0] if row else 0})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+# 5) OBTENER HISTORIAL DE MEDIDAS CORPORALES
+@api_bp.route("/historial/<int:usuario_id>", methods=["GET"])
+def obtener_historial(usuario_id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT id, grasa, masa_muscular, imc, whtr, fecha
+            FROM historial
+            WHERE usuario_id = %s
+            ORDER BY fecha DESC
+        """, (usuario_id,))
+
+        rows = cur.fetchall()
+
+        data = [
+            {
+                "id": r[0],
+                "grasa": float(r[1]) if r[1] else 0,
+                "masa_muscular": float(r[2]) if r[2] else 0,
+                "imc": float(r[3]) if r[3] else 0,
+                "whtr": float(r[4]) if r[4] else 0,
+                "fecha": str(r[5]) if r[5] else "",
+            }
+            for r in rows
+        ]
+
+        return jsonify(data)
     except Exception as e:
         conn.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500

@@ -20,9 +20,13 @@ def login():
     conn = get_conn()
     cur = conn.cursor()
 
+    user = None
     try:
         cur.execute("SELECT id, contraseña, nombre, rol FROM usuarios WHERE correo = %s", (correo,))
         user = cur.fetchone()
+    except Exception as e:
+        print(f"Error en BD web Login: {e}")
+        return "Error interno del servidor", 500
     finally:
         cur.close()
         conn.close()
@@ -49,41 +53,48 @@ def logout():
 # LOGIN API (APP MÓVIL)
 @auth_bp.route("/api/login", methods=["POST"])
 def api_login():
-    data = request.json
-    correo = data.get("correo")
-    password = data.get("password")
-
-    from app.db import get_conn
-    conn = get_conn()
-    cur = conn.cursor()
-
     try:
-        cur.execute("SELECT id, contraseña, nombre, rol FROM usuarios WHERE correo = %s", (correo,))
-        user = cur.fetchone()
-    finally:
-        cur.close()
-        conn.close()
+        data = request.json
+        correo = data.get("correo")
+        password = data.get("password")
 
-    if not user:
-        return jsonify({"error": "Usuario no encontrado"}), 404
-    
-    user_id, hashed_password, nombre, rol = user
+        from app.db import get_conn
+        conn = get_conn()
+        cur = conn.cursor()
 
-    if bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8")):
+        user = None
+        try:
+            cur.execute("SELECT id, contraseña, nombre, rol FROM usuarios WHERE correo = %s", (correo,))
+            user = cur.fetchone()
+        except Exception as e:
+            print(f"Error en BD API Login: {e}")
+            return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
+        finally:
+            cur.close()
+            conn.close()
 
-        from app.utils.auth import generar_token
-        token = generar_token(user_id)
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+        
+        user_id, hashed_password, nombre, rol = user
 
-        return jsonify({
-            "mensaje": "Login exitoso",
-            "token": token,
-            "usuario_id": user_id,
-            "nombre": nombre,
-            "rol": rol
-        }), 200
-    
-    else:
-        return jsonify({"error": "Contraseña incorrecta"}), 401
+        if bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8")):
+
+            from app.utils.auth import generar_token
+            token = generar_token(user_id)
+
+            return jsonify({
+                "mensaje": "Login exitoso",
+                "token": token,
+                "usuario_id": user_id,
+                "nombre": nombre,
+                "rol": rol
+            }), 200
+        
+        else:
+            return jsonify({"error": "Contraseña incorrecta"}), 401
+    except Exception as big_e:
+        return jsonify({"error": "CRITICAL CRASH", "trace": str(big_e)}), 500
     
 @auth_bp.route('/api/perfil', methods=['GET'])
 @token_required

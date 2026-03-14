@@ -13,8 +13,12 @@ def obtener_ejercicios(usuario_actual):
         {
             "id": e.id,
             "nombre": e.nombre,
-            "grupo_muscular": e.grupo_muscular,
-            "descripcion": e.descripcion
+            "rutina_id": e.rutina_id,
+            "series": e.series,
+            "repeticiones": e.repeticiones,
+            "peso_sugerido": e.peso_sugerido,
+            "notas": e.notas,
+            "dia": e.dia
         }
         for e in ejercicios
     ]
