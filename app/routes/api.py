@@ -15,7 +15,7 @@ def obtener_rutina(usuario_id, dia):
 
     try:
         cur.execute("""
-            SELECT e.id, e.nombre, e.series, e.repeticiones, e.peso_sugerido, e.notas
+            SELECT e.id, e.nombre, e.series, e.repeticiones, e.peso_sugerido, e.notas, e.descanso
             FROM ejercicios e
             JOIN rutinas_asignadas ra ON ra.rutina_id = e.rutina_id
             WHERE ra.cliente_id = %s AND e.dia = %s
@@ -34,6 +34,7 @@ def obtener_rutina(usuario_id, dia):
                 "repeticiones": e[3],
                 "peso": e[4],
                 "notas": e[5],
+                "descanso": e[6] or 60,
             }
             for e in ejercicios
         ]
@@ -109,7 +110,7 @@ def registrar_medidas_api():
                 resultado["masa_muscular"],
                 resultado["imc"],
                 resultado["whtr"],
-                data.get("brazo"),
+                data.get("brazo") or data.get("biceps"),
                 data.get("pierna"),
                 peso,
                 altura,

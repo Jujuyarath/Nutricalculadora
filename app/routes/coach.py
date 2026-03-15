@@ -130,11 +130,12 @@ def editar_rutina(rutina_id):
             repeticiones = request.form["repeticiones"]
             peso = request.form["peso"]
             notas = request.form["notas"]
+            descanso = request.form.get("descanso", 60)
 
             cur.execute("""
-                INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas, dia)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (rutina_id, nombre, series, repeticiones, peso, notas, dia))
+                INSERT INTO ejercicios (rutina_id, nombre, series, repeticiones, peso_sugerido, notas, dia, descanso)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (rutina_id, nombre, series, repeticiones, peso, notas, dia, descanso))
 
             conn.commit()
 
@@ -147,7 +148,7 @@ def editar_rutina(rutina_id):
     # OBTENER EJERCICIOS EXISTENTES
     try:
         cur.execute("""
-            SELECT id, dia, nombre, series, repeticiones, peso_sugerido, notas
+            SELECT id, dia, nombre, series, repeticiones, peso_sugerido, notas, descanso
             FROM ejercicios
             WHERE rutina_id = %s
             ORDER BY 
@@ -366,13 +367,14 @@ def editar_ejercicio(ejercicio_id):
         repeticiones = request.form["repeticiones"]
         peso = request.form["peso"]
         notas = request.form["notas"]
+        descanso = request.form.get("descanso", 60)
 
         try:
             cur.execute("""
                 UPDATE ejercicios
-                SET dia=%s, nombre=%s, series=%s, repeticiones=%s, peso_sugerido=%s, notas=%s
+                SET dia=%s, nombre=%s, series=%s, repeticiones=%s, peso_sugerido=%s, notas=%s, descanso=%s
                 WHERE id=%s
-            """, (dia, nombre, series, repeticiones, peso, notas, ejercicio_id))
+            """, (dia, nombre, series, repeticiones, peso, notas, descanso, ejercicio_id))
 
             conn.commit()
 
@@ -392,7 +394,7 @@ def editar_ejercicio(ejercicio_id):
     try:
         # Obtener datos del ejercicio para mostrar en el formulario
         cur.execute("""
-            SELECT rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas
+            SELECT rutina_id, dia, nombre, series, repeticiones, peso_sugerido, notas, descanso
             FROM ejercicios
             WHERE id=%s
         """, (ejercicio_id,))
@@ -414,7 +416,7 @@ def actualizar_ejercicio():
     campo = data["campo"]
     valor = data["valor"]
 
-    campos_validos = ["nombre", "series", "repeticiones", "peso_sugerido", "notas"]
+    campos_validos = ["nombre", "series", "repeticiones", "peso_sugerido", "notas", "descanso"]
     if campo not in campos_validos:
         return {"status": "error", "msg": "Campo inválido"}, 400
 

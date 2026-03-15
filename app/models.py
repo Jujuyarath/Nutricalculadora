@@ -59,6 +59,15 @@ class Historial(db.Model):
     imc = db.Column(db.Numeric)
     whtr = db.Column(db.Numeric)
     fecha = db.Column(db.DateTime, server_default=db.func.now())
+    # Nuevas mediciones
+    peso = db.Column(db.Numeric)
+    altura = db.Column(db.Numeric)
+    cuello = db.Column(db.Numeric)
+    abdomen = db.Column(db.Numeric)
+    cintura = db.Column(db.Numeric)
+    cadera = db.Column(db.Numeric)
+    brazo = db.Column(db.Numeric)
+    pierna = db.Column(db.Numeric)
 
 class EjerciciosBase(db.Model):
     __tablename__ = "ejercicios_base"
@@ -77,6 +86,7 @@ class Ejercicios(db.Model):
     peso_sugerido = db.Column(db.String(50))
     notas = db.Column(db.Text)
     dia = db.Column(db.String(20))
+    descanso = db.Column(db.Integer, default=60)
 
 class Asignaciones(db.Model):
     __tablename__ = "asignaciones"
