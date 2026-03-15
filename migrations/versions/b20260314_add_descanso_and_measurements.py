@@ -16,27 +16,43 @@ depends_on = None
 
 
 def upgrade():
-    # Agregar descanso a ejercicios
-    op.add_column('ejercicios', sa.Column('descanso', sa.Integer(), server_default='60', nullable=True))
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
     
-    # Agregar columnas a historial
-    op.add_column('historial', sa.Column('peso', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('altura', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('cuello', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('abdomen', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('cintura', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('cadera', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('brazo', sa.Numeric(), nullable=True))
-    op.add_column('historial', sa.Column('pierna', sa.Numeric(), nullable=True))
+    # Columnas para ejercicios
+    existing_ejercicios = [c['name'] for c in inspector.get_columns('ejercicios')]
+    if 'descanso' not in existing_ejercicios:
+        op.add_column('ejercicios', sa.Column('descanso', sa.Integer(), server_default='60', nullable=True))
+    
+    # Columnas para historial
+    existing_historial = [c['name'] for c in inspector.get_columns('historial')]
+    cols_to_add = [
+        ('peso', sa.Numeric()),
+        ('altura', sa.Numeric()),
+        ('cuello', sa.Numeric()),
+        ('abdomen', sa.Numeric()),
+        ('cintura', sa.Numeric()),
+        ('cadera', sa.Numeric()),
+        ('brazo', sa.Numeric()),
+        ('pierna', sa.Numeric()),
+    ]
+    
+    for col_name, col_type in cols_to_add:
+        if col_name not in existing_historial:
+            op.add_column('historial', sa.Column(col_name, col_type, nullable=True))
 
 
 def downgrade():
-    op.drop_column('historial', 'pierna')
-    op.drop_column('historial', 'brazo')
-    op.drop_column('historial', 'cadera')
-    op.drop_column('historial', 'cintura')
-    op.drop_column('historial', 'abdomen')
-    op.drop_column('historial', 'cuello')
-    op.drop_column('historial', 'altura')
-    op.drop_column('historial', 'peso')
-    op.drop_column('ejercicios', 'descanso')
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    
+    # Quitar de historial
+    existing_historial = [c['name'] for c in inspector.get_columns('historial')]
+    for col_name in ['pierna', 'brazo', 'cadera', 'cintura', 'abdomen', 'cuello', 'altura', 'peso']:
+        if col_name in existing_historial:
+            op.drop_column('historial', col_name)
+            
+    # Quitar de ejercicios
+    existing_ejercicios = [c['name'] for c in inspector.get_columns('ejercicios')]
+    if 'descanso' in existing_ejercicios:
+        op.drop_column('ejercicios', 'descanso')
